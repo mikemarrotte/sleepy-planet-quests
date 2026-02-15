@@ -143,11 +143,20 @@ function handleRitualCommand(data) {
 }
 
 const updateIndividualStreams = (tonySid, courtSid, room = '', pass = '') => {
+    const role = window.participantRole || '';
+
     if (tonySid) {
-        tonyOrb.innerHTML = `<iframe src="${getStreamUrl(tonySid, room, pass)}" allow="autoplay;camera;microphone;fullscreen;picture-in-picture"></iframe>`;
+        // If I am Tony, I PUSH my camera to TonyPort. If I am NOT Tony, I VIEW TonyPort.
+        const pushID = (role === 'tony') ? tonySid : '';
+        const viewID = (role !== 'tony') ? tonySid : tonySid; // Tony sees himself too for presence
+        tonyOrb.innerHTML = `<iframe src="${getStreamUrl(viewID, pushID, room, pass)}" allow="autoplay;camera;microphone;fullscreen;picture-in-picture"></iframe>`;
     }
+
     if (courtSid) {
-        courtOrb.innerHTML = `<iframe src="${getStreamUrl(courtSid, room, pass)}" allow="autoplay;camera;microphone;fullscreen;picture-in-picture"></iframe>`;
+        // If I am Court, I PUSH my camera to CourtPort. If I am NOT Court, I VIEW CourtPort.
+        const pushID = (role === 'court') ? courtSid : '';
+        const viewID = (role !== 'court') ? courtSid : courtSid; // Court sees herself too for presence
+        courtOrb.innerHTML = `<iframe src="${getStreamUrl(viewID, pushID, room, pass)}" allow="autoplay;camera;microphone;fullscreen;picture-in-picture"></iframe>`;
     }
 };
 

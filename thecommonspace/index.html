@@ -13,43 +13,67 @@
             position: fixed;
             bottom: 10px;
             left: 10px;
-            font-size: 0.6rem;
+            font-size: 0.5rem;
             color: #5e4a4a;
-            z-index: 1001;
+            z-index: 2000;
             font-family: monospace;
-            opacity: 0.5;
+            opacity: 0.3;
         }
 
         #sync-light {
             position: fixed;
             top: 10px;
             right: 10px;
-            width: 6px;
-            height: 6px;
+            width: 4px;
+            height: 4px;
             border-radius: 50%;
-            background: #5e4a4a;
-            z-index: 1001;
+            background: transparent;
+            z-index: 2000;
         }
 
-        .label {
+        /* The Arrival Mask */
+        #arrival-mask {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: rgba(212, 212, 200, 0.05);
-            font-size: 3rem;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0d110d;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 2s ease-in-out;
+        }
+
+        .ritual-btn {
+            background: transparent;
+            border: 1px solid rgba(212, 212, 200, 0.2);
+            color: #d4d4c8;
+            padding: 20px 40px;
+            font-family: 'Newsreader', serif;
             letter-spacing: 0.3em;
-            text-transform: uppercase;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 1s;
+        }
+
+        .ritual-btn:hover {
+            border-color: #d4d4c8;
+            background: rgba(212, 212, 200, 0.05);
         }
     </style>
 </head>
 
 <body>
+    <!-- The Initial Blackness -->
+    <div id="arrival-mask">
+        <button class="ritual-btn" onclick="enterRitual()">ENTER THE COMMON SPACE</button>
+    </div>
+
     <div id="vessel">
         <div id="sync-light"></div>
         <div id="debug-status">SYNC: STARTING</div>
-        <div class="label">The Common Space</div>
 
         <div class="background-void"></div>
         <div id="portal-stage">
@@ -64,8 +88,28 @@
 
     <script src="../app.js"></script>
     <script>
-        // Override app.js init for local stability
-        window.participantRole = 'participant'; 
+        // Detection Logic
+        const urlParams = new URLSearchParams(window.location.search);
+        const role = urlParams.get('role');
+
+        // Clean the URL immediately for aesthetics
+        if (role) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            window.participantRole = role;
+        }
+
+        function enterRitual() {
+            document.getElementById('arrival-mask').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('arrival-mask').style.display = 'none';
+            }, 2000);
+
+            // Trigger the camera/audio logic in app.js
+            if (window.initRemoteControl) initRemoteControl();
+
+            // If we have a role, we need to ensure local streams are "pushed"
+            // This will be handled by the next UPDATE_STREAMS command from Mike
+        }
     </script>
 </body>
 
