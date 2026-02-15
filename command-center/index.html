@@ -25,7 +25,6 @@
             gap: 20px;
         }
 
-        /* The Video Section */
         #director-frame {
             flex: 1;
             min-height: 400px;
@@ -41,7 +40,6 @@
             border: none;
         }
 
-        /* The Control Section */
         .controls {
             flex: 0 0 auto;
             display: flex;
@@ -68,17 +66,22 @@
         }
 
         #sync-light {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: #5e4a4a;
-            transition: background 0.5s;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            background: #333;
+            transition: all 0.5s;
+            position: relative;
         }
 
         .sync-active #sync-light {
             background: #4a5e4a;
-            box-shadow: 0 0 10px rgba(74, 94, 74, 0.5);
+            box-shadow: 0 0 10px #4a5e4a;
+        }
+
+        .sync-error #sync-light {
+            background: #5e4a4a;
+            box-shadow: 0 0 10px #5e4a4a;
         }
 
         textarea {
@@ -93,11 +96,6 @@
             border-radius: 8px;
             resize: none;
             outline: none;
-            transition: border-color 0.3s;
-        }
-
-        textarea:focus {
-            border-color: rgba(212, 212, 200, 0.5);
         }
 
         .btn-row {
@@ -120,11 +118,6 @@
         button:hover {
             background: #1a1a1a;
             border-color: var(--gold);
-        }
-
-        button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
         }
 
         #push-btn.sent {
@@ -152,13 +145,13 @@
     <div class="header-row">
         <h1>RITUAL MASTER TERMINAL</h1>
         <div id="sync-status" style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:0.6rem; opacity:0.5; letter-spacing:0.1em;">SYNC STATUS:</span>
+            <span id="status-text" style="font-size:0.6rem; opacity:0.5; letter-spacing:0.1em;">SYNCING...</span>
             <div id="sync-light"></div>
         </div>
     </div>
 
     <div id="director-frame">
-        <iframe src="https://vdo.ninja/?director=TheIntroduction_2024"
+        <iframe src="https://vdo.ninja/?director=ACommonSpace&push=MikePort"
             allow="autoplay;camera;microphone;fullscreen"></iframe>
     </div>
 
@@ -166,7 +159,7 @@
         <textarea id="instruction-input" placeholder="Type instructions for the space..."></textarea>
 
         <div class="btn-row">
-            <button id="push-btn" onclick="pushInstruction()" disabled>PUSH TO THE SPACE</button>
+            <button id="push-btn" onclick="pushInstruction()">PUSH TO THE SPACE</button>
         </div>
 
         <div class="presets">
@@ -187,22 +180,30 @@
         let supabase;
         let channel;
 
-        function initSupabase() {
-            if (typeof window.supabase === 'undefined') return setTimeout(initSupabase, 500);
+        function connect() {
+            if (typeof window.supabase === 'undefined') return setTimeout(connect, 500);
 
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            channel = supabase.channel('ritual_instructions');
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                channel = supabase.channel('ritual_instructions');
 
-            channel.subscribe((status) => {
-                const btn = document.getElementById('push-btn');
-                if (status === 'SUBSCRIBED') {
-                    document.body.classList.add('sync-active');
-                    btn.disabled = false;
-                } else {
-                    document.body.classList.remove('sync-active');
-                    btn.disabled = true;
-                }
-            });
+                channel.subscribe((status) => {
+                    const light = document.getElementById('sync-light');
+                    const text = document.getElementById('status-text');
+
+                    if (status === 'SUBSCRIBED') {
+                        document.body.className = 'sync-active';
+                        text.textContent = 'CONNECTED';
+                    } else if (status === 'CHANNEL_ERROR') {
+                        document.body.className = 'sync-error';
+                        text.textContent = 'RETRYING...';
+                        setTimeout(connect, 2000);
+                    }
+                });
+            } catch (e) {
+                console.error('Connection failed', e);
+                setTimeout(connect, 2000);
+            }
         }
 
         function pushInstruction() {
@@ -212,17 +213,21 @@
 
             if (!content) return;
 
+            // Attempt broadcast even if state is pending
             channel.send({
                 type: 'broadcast',
                 event: 'text',
                 payload: { content: content }
-            }).then(() => {
+            }).then((resp) => {
                 btn.classList.add('sent');
                 btn.textContent = 'MESSAGE SENT';
                 setTimeout(() => {
                     btn.classList.remove('sent');
                     btn.textContent = 'PUSH TO THE SPACE';
-                }, 2000);
+                }, 1500);
+            }).catch(err => {
+                btn.textContent = 'TRY AGAIN';
+                setTimeout(() => btn.textContent = 'PUSH TO THE SPACE', 1000);
             });
         }
 
@@ -231,7 +236,7 @@
             pushInstruction();
         }
 
-        initSupabase();
+        connect();
     </script>
 </body>
 
