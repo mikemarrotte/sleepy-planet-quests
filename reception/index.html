@@ -16,13 +16,11 @@
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
-            gap: 20px;
         }
 
         .header {
             text-align: center;
-            border-bottom: 1px solid rgba(212, 212, 200, 0.1);
-            padding-bottom: 10px;
+            padding-bottom: 20px;
         }
 
         h1 {
@@ -30,44 +28,42 @@
             font-weight: 200;
             letter-spacing: 0.4em;
             font-size: 1.2rem;
+            opacity: 0.5;
         }
 
-        /* Your Broadcast Box */
-        .mike-broadcast {
-            flex: 0 0 150px;
-            background: #000;
-            border: 1px solid rgba(212, 212, 200, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        /* Participant Grid */
-        .participant-grid {
+        /* THE 3-BOX GRID */
+        .monitor-grid {
             flex: 1;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
         }
 
-        .video-box {
+        .monitor-box {
             background: #000;
             border: 1px solid rgba(212, 212, 200, 0.1);
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
+        }
+
+        .monitor-box.mike {
+            border: 1px solid rgba(212, 212, 200, 0.4);
+            box-shadow: 0 0 20px rgba(212, 212, 200, 0.05);
         }
 
         .label {
             position: absolute;
             top: 15px;
             left: 15px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.8);
             padding: 4px 12px;
             border-radius: 4px;
             font-size: 0.7rem;
             letter-spacing: 0.2em;
             z-index: 10;
-            border: 1px solid rgba(212, 212, 200, 0.2);
+            border: 1px solid rgba(212, 212, 200, 0.1);
+            pointer-events: none;
         }
 
         iframe {
@@ -83,26 +79,27 @@
         <h1>RECEPTION</h1>
     </div>
 
-    <!-- YOUR CAM/MIC (Talk to them here) -->
-    <div class="mike-broadcast">
-        <div class="label">YOUR FEED (MIKE)</div>
-        <iframe src="https://vdo.ninja/?room=TheCommonRoom_111&push=MikePort&cleanviewer=1"
-            allow="autoplay;camera;microphone;fullscreen"></iframe>
-    </div>
-
-    <!-- THE GUESTS -->
-    <div class="participant-grid">
-        <div class="video-box">
+    <div class="monitor-grid">
+        <!-- TONY FEED -->
+        <div class="monitor-box">
             <div class="label">TONY</div>
             <iframe
-                src="https://vdo.ninja/?view=TonyPort&room=TheCommonRoom_111&autoplay=1&autostart=1&cleanviewer=1&mute=1"
+                src="https://vdo.ninja/?room=TheCommonRoom_111&view=TonyPort&autoplay=1&autostart=1&cleanviewer=1&mute=1"
                 allow="autoplay;camera;microphone;fullscreen"></iframe>
         </div>
 
-        <div class="video-box">
+        <!-- YOUR FEED (MIKE) -->
+        <div class="monitor-box mike">
+            <div class="label">YOU (MIKE)</div>
+            <iframe src="https://vdo.ninja/?room=TheCommonRoom_111&push=MikePort&view=none&cleanviewer=1"
+                allow="autoplay;camera;microphone;fullscreen"></iframe>
+        </div>
+
+        <!-- COURT FEED -->
+        <div class="monitor-box">
             <div class="label">COURT</div>
             <iframe
-                src="https://vdo.ninja/?view=CourtPort&room=TheCommonRoom_111&autoplay=1&autostart=1&cleanviewer=1&mute=1"
+                src="https://vdo.ninja/?room=TheCommonRoom_111&view=CourtPort&autoplay=1&autostart=1&cleanviewer=1&mute=1"
                 allow="autoplay;camera;microphone;fullscreen"></iframe>
         </div>
     </div>
