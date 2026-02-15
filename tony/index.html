@@ -8,18 +8,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            background: #050505;
+            background: #000;
             color: #d4d4c8;
             font-family: 'Newsreader', serif;
             margin: 0;
-            display: flex;
-            flex-direction: column;
+            overflow: hidden;
             height: 100vh;
         }
 
-        #video-container {
-            flex: 1;
-            background: #000;
+        /* The Video takes up the whole background */
+        #video-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
         iframe {
@@ -28,59 +32,98 @@
             border: none;
         }
 
-        #instruction-box {
-            height: 25vh;
-            border-top: 1px solid rgba(212, 212, 200, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
+        /* The Overlay for Instructions */
+        #instruction-layer {
+            position: fixed;
+            bottom: 15%;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            pointer-events: none;
             text-align: center;
-            box-sizing: border-box;
-            background: #070707;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            padding-bottom: 5vh;
         }
 
         #instruction-text {
-            font-size: 1.5rem;
-            letter-spacing: 0.1em;
-            line-height: 1.6;
-            transition: opacity 0.5s;
+            font-size: 2rem;
+            letter-spacing: 0.15em;
+            line-height: 1.4;
+            max-width: 80%;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 1), 0 0 40px rgba(0, 0, 0, 0.8);
+            transition: all 1s ease-in-out;
+            opacity: 0;
+            transform: translateY(20px);
+            background: rgba(5, 5, 5, 0.4);
+            padding: 20px 40px;
+            border-radius: 4px;
+        }
+
+        #instruction-text.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #sync-debug {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            font-size: 0.5rem;
+            color: #333;
+            z-index: 20;
         }
     </style>
 </head>
 
 <body>
-    <div id="video-container">
-        <!-- Shared Room: ACommonSpace -->
+    <div id="sync-debug">BOOTING...</div>
+
+    <div id="video-layer">
         <iframe src="https://vdo.ninja/?room=ACommonSpace&cleanviewer=1"
             allow="autoplay;camera;microphone;fullscreen"></iframe>
     </div>
 
-    <div id="instruction-box">
+    <div id="instruction-layer">
         <p id="instruction-text">The space is preparing...</p>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Subscribing with acknowledgement for better reliability
-        const channel = supabase.channel('ritual_instructions', {
-            config: { broadcast: { ack: true } }
-        });
+        const debug = document.getElementById('sync-debug');
+        const textElem = document.getElementById('instruction-text');
 
-        channel.on('broadcast', { event: 'text' }, (payload) => {
-            console.log('Received Instruction:', payload.payload.content);
-            const textElem = document.getElementById('instruction-text');
-            textElem.style.opacity = 0;
-            setTimeout(() => {
-                textElem.textContent = payload.payload.content;
-                textElem.style.opacity = 1;
-            }, 500);
-        }).subscribe((status) => {
-            console.log('Sync Status:', status);
-        });
+        function connect() {
+            if (typeof window.supabase === 'undefined') return setTimeout(connect, 500);
+
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            const channel = supabase.channel('ritual_v3', {
+                config: { broadcast: { ack: true } }
+            });
+
+            channel.on('broadcast', { event: 'text' }, (payload) => {
+                debug.textContent = "NEW SIGNAL RECEIVED";
+
+                textElem.classList.remove('active');
+                setTimeout(() => {
+                    textElem.textContent = payload.payload.content;
+                    textElem.classList.add('active');
+                }, 1000);
+            }).subscribe((status) => {
+                debug.textContent = `SYNC: ${status}`;
+                if (status === 'SUBSCRIBED') {
+                    // Start hidden
+                    setTimeout(() => textElem.classList.add('active'), 2000);
+                }
+            });
+        }
+
+        connect();
     </script>
 </body>
 
