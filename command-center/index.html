@@ -4,17 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ritual Master Command</title>
+    <title>Command Center</title>
     <style>
-        :root {
-            --gold: #d4d4c8;
-            --bg: #050505;
-        }
-
         body {
-            background: var(--bg);
-            color: var(--gold);
-            font-family: 'Newsreader', serif;
+            background: #050505;
             margin: 0;
             padding: 0;
             overflow: hidden;
@@ -32,36 +25,13 @@
             height: 100%;
             border: none;
         }
-
-        #helper-tip {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid var(--gold);
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            pointer-events: none;
-            opacity: 0.7;
-            text-align: center;
-        }
     </style>
 </head>
 
 <body>
-
     <div id="director-frame">
-        <!-- The Director Panel has a built-in Chat box -->
         <iframe src="https://vdo.ninja/?director=ACommonSpace" allow="autoplay;camera;microphone;fullscreen"></iframe>
     </div>
-
-    <div id="helper-tip">
-        To Change the "Oracle" Text: **Type a message into the Chat box inside the video window.**
-    </div>
-
 </body>
 
 </html>

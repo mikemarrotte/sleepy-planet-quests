@@ -69,25 +69,21 @@
 
 <body>
     <div id="video-layer">
-        <!-- Added &api=1 so the page can 'hear' Mike's chat messages -->
         <iframe id="vdo-iframe" src="https://vdo.ninja/?room=ACommonSpace&cleanviewer=1&api=1"
             allow="autoplay;camera;microphone;fullscreen"></iframe>
     </div>
 
     <div id="instruction-layer">
-        <p id="instruction-text" class="active">The space is preparing...</p>
+        <p id="instruction-text"></p>
     </div>
 
     <script>
         const textElem = document.getElementById('instruction-text');
 
-        // This listens to the VIDEO STREAM for Mike's chat messages
         window.addEventListener("message", function (e) {
             if (e.data && e.data.type === "chat") {
                 const msg = e.data.msg;
-                console.log("Oracle Received:", msg);
 
-                // Animate the text change
                 textElem.classList.remove('active');
                 setTimeout(() => {
                     textElem.textContent = msg;
