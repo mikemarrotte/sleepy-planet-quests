@@ -185,7 +185,9 @@
 
             try {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                channel = supabase.channel('ritual_instructions');
+                channel = supabase.channel('ritual_instructions', {
+                    config: { broadcast: { ack: true } }
+                });
 
                 channel.subscribe((status) => {
                     const light = document.getElementById('sync-light');

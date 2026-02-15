@@ -52,7 +52,7 @@
 <body>
     <div id="video-container">
         <!-- Shared Room: ACommonSpace -->
-        <iframe src="https://vdo.ninja/?room=ACommonSpace&view=MikePort&cleanviewer=1"
+        <iframe src="https://vdo.ninja/?room=ACommonSpace&cleanviewer=1"
             allow="autoplay;camera;microphone;fullscreen"></iframe>
     </div>
 
@@ -65,15 +65,22 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const channel = supabase.channel('ritual_instructions');
+        // Subscribing with acknowledgement for better reliability
+        const channel = supabase.channel('ritual_instructions', {
+            config: { broadcast: { ack: true } }
+        });
+
         channel.on('broadcast', { event: 'text' }, (payload) => {
+            console.log('Received Instruction:', payload.payload.content);
             const textElem = document.getElementById('instruction-text');
             textElem.style.opacity = 0;
             setTimeout(() => {
                 textElem.textContent = payload.payload.content;
                 textElem.style.opacity = 1;
             }, 500);
-        }).subscribe();
+        }).subscribe((status) => {
+            console.log('Sync Status:', status);
+        });
     </script>
 </body>
 
