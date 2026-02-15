@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>The Common Space - Court</title>
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#0d110d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../icon-192.png">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <div id="vessel">
+        <div class="background-void"></div>
+        <div id="ambient-audio-container"></div>
+        <div id="portal-stage">
+            <div id="tony-orb-container" class="orb-wrapper">
+                <div class="participant-orb" id="tony-orb"></div>
+            </div>
+            <div id="court-orb-container" class="orb-wrapper">
+                <div class="participant-orb" id="court-orb"></div>
+            </div>
+        </div>
+        <div id="curtain"></div>
+        <div id="omen-container">
+            <p id="omen-text"></p>
+        </div>
+    </div>
+
+    <!-- SVG Displacement Filters -->
+    <svg style="display: none;">
+        <defs>
+            <filter id="orb-turbulence">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="20" />
+            </filter>
+        </defs>
+    </svg>
+
+    <script>
+        // Set participant context before loading app.js
+        window.participantRole = 'court';
+    </script>
+    <script src="../app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../service-worker.js', { scope: '../' })
+                    .then(reg => console.log('Service Worker registered for Court.', reg))
+                    .catch(err => console.log('Service Worker registration failed.', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

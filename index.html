@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>The Common Space</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d110d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="vessel">
+        <!-- Layer 0: Background -->
+        <div class="background-void"></div>
+
+        <!-- Layer 1: Ambient Audio Container -->
+        <div id="ambient-audio-container"></div>
+
+        <!-- Layer 2 & 3: Participant Orbs -->
+        <div id="portal-stage">
+            <div id="tony-orb-container" class="orb-wrapper">
+                <div class="participant-orb" id="tony-orb">
+                    <!-- IFrame Pipe will go here -->
+                </div>
+            </div>
+            <div id="court-orb-container" class="orb-wrapper">
+                <div class="participant-orb" id="court-orb">
+                    <!-- IFrame Pipe will go here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Layer 4: The Curtain -->
+        <div id="curtain"></div>
+
+        <!-- Layer 5: The Omen -->
+        <div id="omen-container">
+            <p id="omen-text"></p>
+        </div>
+    </div>
+
+    <!-- SVG Displacement Filters for the Orbs -->
+    <svg style="display: none;">
+        <defs>
+            <filter id="orb-turbulence">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="20" />
+            </filter>
+        </defs>
+    </svg>
+
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('Service Worker registered.', reg))
+                    .catch(err => console.log('Service Worker registration failed.', err));
+            });
+        }
+    </script>
+</body>
+</html>
