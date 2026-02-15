@@ -122,17 +122,30 @@
     <script>
         const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const ritualChannel = supabase.channel('common_space_ritual');
 
-        ritualChannel.subscribe((status) => {
-            console.log('Command Center Sync Status:', status);
-            const statusLight = document.getElementById('sync-status');
-            if (statusLight) {
-                statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
-                statusLight.title = `Status: ${status}`;
+        let supabase;
+        let ritualChannel;
+
+        function initSupabase() {
+            if (typeof window.supabase !== 'undefined') {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                ritualChannel = supabase.channel('common_space_ritual');
+
+                ritualChannel.subscribe((status) => {
+                    console.log('Command Center Sync Status:', status);
+                    const statusLight = document.getElementById('sync-status');
+                    if (statusLight) {
+                        statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+                        statusLight.title = `Status: ${status}`;
+                    }
+                });
+            } else {
+                console.log('Waiting for Supabase SDK...');
+                setTimeout(initSupabase, 500);
             }
-        });
+        }
+
+        initSupabase();
 
         const localChannel = new BroadcastChannel('common_space_ritual');
 

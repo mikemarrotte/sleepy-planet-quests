@@ -43,22 +43,35 @@ let supabase;
 let ritualChannel;
 
 const initRemoteControl = () => {
-    if (typeof supabase === 'undefined' && typeof window.supabase !== 'undefined') {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        ritualChannel = supabase.channel('common_space_ritual');
+    let attempts = 0;
+    const maxAttempts = 10;
 
-        ritualChannel
-            .on('broadcast', { event: 'command' }, (payload) => {
-                handleRitualCommand(payload.payload);
-            })
-            .subscribe((status) => {
-                console.log('Supabase Sync Status:', status);
-                const statusLight = document.getElementById('sync-status');
-                if (statusLight) {
-                    statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
-                }
-            });
-    }
+    const tryConnect = () => {
+        if (typeof window.supabase !== 'undefined') {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            ritualChannel = supabase.channel('common_space_ritual');
+
+            ritualChannel
+                .on('broadcast', { event: 'command' }, (payload) => {
+                    handleRitualCommand(payload.payload);
+                })
+                .subscribe((status) => {
+                    console.log('Supabase Sync Status:', status);
+                    const statusLight = document.getElementById('sync-status');
+                    if (statusLight) {
+                        statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+                    }
+                });
+        } else if (attempts < maxAttempts) {
+            attempts++;
+            console.log(`Waiting for Supabase... Attempt ${attempts}`);
+            setTimeout(tryConnect, 500);
+        } else {
+            console.error('Supabase failed to load.');
+        }
+    };
+
+    tryConnect();
 };
 
 // Fallback for local testing if needed
