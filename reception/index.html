@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reception | Front Desk</title>
+    <title>Reception | Monitor Wall</title>
     <style>
         body {
             background: #050705;
@@ -21,6 +21,7 @@
         .header {
             text-align: center;
             padding-bottom: 20px;
+            position: relative;
         }
 
         h1 {
@@ -31,7 +32,21 @@
             opacity: 0.5;
         }
 
-        /* THE 3-BOX GRID */
+        .start-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #4a5e4a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: inherit;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 15px rgba(74, 94, 74, 0.5);
+        }
+
         .monitor-grid {
             flex: 1;
             display: grid;
@@ -49,7 +64,6 @@
 
         .monitor-box.mike {
             border: 1px solid rgba(212, 212, 200, 0.4);
-            box-shadow: 0 0 20px rgba(212, 212, 200, 0.05);
         }
 
         .label {
@@ -77,32 +91,35 @@
 <body>
     <div class="header">
         <h1>RECEPTION</h1>
+        <button class="start-btn" onclick="startMonitors()">ACTIVATE MONITOR WALL</button>
     </div>
 
-    <div class="monitor-grid">
-        <!-- TONY FEED -->
-        <div class="monitor-box">
-            <div class="label">TONY</div>
-            <iframe
-                src="https://vdo.ninja/?room=TheCommonRoom_111&view=TonyPort&autoplay=1&autostart=1&cleanviewer=1&mute=1"
-                allow="autoplay;camera;microphone;fullscreen"></iframe>
-        </div>
-
-        <!-- YOUR FEED (MIKE) -->
-        <div class="monitor-box mike">
-            <div class="label">YOU (MIKE)</div>
-            <iframe src="https://vdo.ninja/?room=TheCommonRoom_111&push=MikePort&view=none&cleanviewer=1"
-                allow="autoplay;camera;microphone;fullscreen"></iframe>
-        </div>
-
-        <!-- COURT FEED -->
-        <div class="monitor-box">
-            <div class="label">COURT</div>
-            <iframe
-                src="https://vdo.ninja/?room=TheCommonRoom_111&view=CourtPort&autoplay=1&autostart=1&cleanviewer=1&mute=1"
-                allow="autoplay;camera;microphone;fullscreen"></iframe>
-        </div>
+    <div class="monitor-grid" id="grid">
+        <!-- Videos will be injected here to bypass browser autoplay blocks -->
     </div>
+
+    <script>
+        const ROOM = 'CommonRitual_111';
+
+        function startMonitors() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = `
+                <div class="monitor-box">
+                    <div class="label">TONY</div>
+                    <iframe src="https://vdo.ninja/?room=${ROOM}&view=TonyPort&autoplay=1&autostart=1&cleanviewer=1&mute=1" allow="autoplay;camera;microphone;fullscreen"></iframe>
+                </div>
+                <div class="monitor-box mike">
+                    <div class="label">YOU (MIKE)</div>
+                    <iframe src="https://vdo.ninja/?room=${ROOM}&push=MikePort&view=none&cleanviewer=1" allow="autoplay;camera;microphone;fullscreen"></iframe>
+                </div>
+                <div class="monitor-box">
+                    <div class="label">COURT</div>
+                    <iframe src="https://vdo.ninja/?room=${ROOM}&view=CourtPort&autoplay=1&autostart=1&cleanviewer=1&mute=1" allow="autoplay;camera;microphone;fullscreen"></iframe>
+                </div>
+            `;
+            document.querySelector('.start-btn').style.display = 'none';
+        }
+    </script>
 </body>
 
 </html>
