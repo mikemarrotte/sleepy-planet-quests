@@ -44,40 +44,48 @@ let ritualChannel;
 
 const initRemoteControl = () => {
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 20;
+    const debugStatus = document.getElementById('debug-status');
 
     const tryConnect = () => {
         if (typeof window.supabase !== 'undefined') {
-            console.log('Initializing Supabase with key:', SUPABASE_KEY.substring(0, 10) + '...');
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            try {
+                if (debugStatus) debugStatus.textContent = 'SYNC: CONNECTING...';
 
-            // Enable broadcast configuration explicitly
-            ritualChannel = supabase.channel('common_space_ritual', {
-                config: {
-                    broadcast: { ack: true }
-                }
-            });
-
-            ritualChannel
-                .on('broadcast', { event: 'command' }, (payload) => {
-                    handleRitualCommand(payload.payload);
-                })
-                .subscribe((status) => {
-                    console.log('Supabase Sync Status:', status);
-                    const statusLight = document.getElementById('sync-status');
-                    const debugStatus = document.getElementById('debug-status');
-
-                    if (statusLight) {
-                        statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
-                    }
-                    if (debugStatus) {
-                        debugStatus.textContent = `SYNC: ${status}`;
-                        debugStatus.style.color = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
-                    }
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                ritualChannel = supabase.channel('common_space_ritual', {
+                    config: { broadcast: { ack: true } }
                 });
+
+                ritualChannel
+                    .on('broadcast', { event: 'command' }, (payload) => {
+                        handleRitualCommand(payload.payload);
+                    })
+                    .subscribe((status) => {
+                        console.log('Supabase Sync Status:', status);
+                        const statusLight = document.getElementById('sync-status');
+
+                        if (statusLight) {
+                            statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+                        }
+                        if (debugStatus) {
+                            debugStatus.textContent = `SYNC: ${status}`;
+                            debugStatus.style.color = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+                        }
+                    });
+            } catch (err) {
+                if (debugStatus) debugStatus.textContent = `SYNC ERROR: ${err.message}`;
+                console.error('Supabase Init Error:', err);
+            }
         } else if (attempts < maxAttempts) {
             attempts++;
+            if (debugStatus) debugStatus.textContent = `SYNC: LOADING SDK (${attempts}/${maxAttempts})...`;
             setTimeout(tryConnect, 500);
+        } else {
+            if (debugStatus) {
+                debugStatus.textContent = 'SYNC ERROR: SDK NOT LOADED';
+                debugStatus.style.color = '#ff0000';
+            }
         }
     };
 

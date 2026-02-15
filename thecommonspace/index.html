@@ -18,10 +18,17 @@
 
 <body>
     <div id="vessel">
-        <!-- Connection Status (Hidden/Subtle) -->
         <div id="sync-status"
-            style="position: fixed; top: 10px; right: 10px; width: 6px; height: 6px; border-radius: 50%; background: transparent; opacity: 0.3; z-index: 1000;">
+            style="position: fixed; top: 10px; right: 10px; width: 8px; height: 8px; border-radius: 50%; background: #5e4a4a; z-index: 1001;">
         </div>
+        <div id="debug-status"
+            style="position: fixed; bottom: 10px; left: 10px; font-size: 0.6rem; color: #5e4a4a; z-index: 1001; opacity: 0.6; font-family: monospace;">
+            SYNC: INITIALIZING...</div>
+
+        <!-- Temporary label to confirm page load -->
+        <div
+            style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(212, 212, 200, 0.05); font-size: 4rem; pointer-events: none; z-index: 1; letter-spacing: 0.2em; text-transform: uppercase;">
+            The Common Space</div>
 
         <!-- Layer 0: Background -->
         <div class="background-void"></div>

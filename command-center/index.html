@@ -128,34 +128,46 @@
         let ritualChannel;
 
         function initSupabase() {
+            const debugStatus = document.getElementById('debug-status');
             if (typeof window.supabase !== 'undefined') {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                ritualChannel = supabase.channel('common_space_ritual', {
-                    config: {
-                        broadcast: { self: true }
-                    }
-                });
+                try {
+                    if (debugStatus) debugStatus.textContent = 'SYNC: CONNECTING...';
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    ritualChannel = supabase.channel('common_space_ritual', {
+                        config: {
+                            broadcast: { self: true }
+                        }
+                    });
 
-                ritualChannel.subscribe((status) => {
-                    console.log('Command Center Sync Status:', status);
-                    const statusLight = document.getElementById('sync-status');
-                    const debugStatus = document.getElementById('debug-status');
+                    ritualChannel.subscribe((status) => {
+                        console.log('Command Center Sync Status:', status);
+                        const statusLight = document.getElementById('sync-status');
 
-                    if (statusLight) {
-                        statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
-                        statusLight.title = `Status: ${status}`;
-                    }
-                    if (debugStatus) {
-                        debugStatus.textContent = `SYNC: ${status}`;
-                        debugStatus.style.color = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
-                    }
-                });
-            } else {
-                console.log('Waiting for Supabase SDK...');
+                        if (statusLight) {
+                            statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+                            statusLight.title = `Status: ${status}`;
+                        }
+                        if (debugStatus) {
+                            debugStatus.textContent = `SYNC: ${status}`;
+                            debugStatus.style.color = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+                        }
+                    });
+                } catch (err) {
+                    if (debugStatus) debugStatus.textContent = `SYNC ERROR: ${err.message}`;
+                }
+            } else if (attempts < 20) {
+                attempts++;
+                if (debugStatus) debugStatus.textContent = `SYNC: LOADING SDK (${attempts}/20)...`;
                 setTimeout(initSupabase, 500);
+            } else {
+                if (debugStatus) {
+                    debugStatus.textContent = 'SYNC ERROR: SDK NOT LOADED';
+                    debugStatus.style.color = '#ff0000';
+                }
             }
         }
 
+        let attempts = 0;
         initSupabase();
 
         const localChannel = new BroadcastChannel('common_space_ritual');
