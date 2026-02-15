@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Introduction</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background: #000;
@@ -16,7 +15,6 @@
             height: 100vh;
         }
 
-        /* The Video takes up the whole background */
         #video-layer {
             position: fixed;
             top: 0;
@@ -32,7 +30,6 @@
             border: none;
         }
 
-        /* The Overlay for Instructions */
         #instruction-layer {
             position: fixed;
             bottom: 15%;
@@ -67,63 +64,37 @@
             opacity: 1;
             transform: translateY(0);
         }
-
-        #sync-debug {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            font-size: 0.5rem;
-            color: #333;
-            z-index: 20;
-        }
     </style>
 </head>
 
 <body>
-    <div id="sync-debug">BOOTING...</div>
-
     <div id="video-layer">
-        <iframe src="https://vdo.ninja/?room=ACommonSpace&cleanviewer=1"
+        <!-- Added &api=1 so the page can 'hear' Mike's chat messages -->
+        <iframe id="vdo-iframe" src="https://vdo.ninja/?room=ACommonSpace&cleanviewer=1&api=1"
             allow="autoplay;camera;microphone;fullscreen"></iframe>
     </div>
 
     <div id="instruction-layer">
-        <p id="instruction-text">The space is preparing...</p>
+        <p id="instruction-text" class="active">The space is preparing...</p>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
-
-        const debug = document.getElementById('sync-debug');
         const textElem = document.getElementById('instruction-text');
 
-        function connect() {
-            if (typeof window.supabase === 'undefined') return setTimeout(connect, 500);
+        // This listens to the VIDEO STREAM for Mike's chat messages
+        window.addEventListener("message", function (e) {
+            if (e.data && e.data.type === "chat") {
+                const msg = e.data.msg;
+                console.log("Oracle Received:", msg);
 
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            const channel = supabase.channel('ritual_v3', {
-                config: { broadcast: { ack: true } }
-            });
-
-            channel.on('broadcast', { event: 'text' }, (payload) => {
-                debug.textContent = "NEW SIGNAL RECEIVED";
-
+                // Animate the text change
                 textElem.classList.remove('active');
                 setTimeout(() => {
-                    textElem.textContent = payload.payload.content;
+                    textElem.textContent = msg;
                     textElem.classList.add('active');
-                }, 1000);
-            }).subscribe((status) => {
-                debug.textContent = `SYNC: ${status}`;
-                if (status === 'SUBSCRIBED') {
-                    // Start hidden
-                    setTimeout(() => textElem.classList.add('active'), 2000);
-                }
-            });
-        }
-
-        connect();
+                }, 800);
+            }
+        });
     </script>
 </body>
 
