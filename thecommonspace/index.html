@@ -13,75 +13,79 @@
         }
 
         body {
-            background: var(--void);
+            background: #000;
             color: var(--gold);
             font-family: 'Newsreader', serif;
             margin: 0;
             overflow: hidden;
         }
 
-        #vessel {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
+        /* The Two Stages */
+        #reception-stage,
+        #ritual-stage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 2s ease-in-out, transform 2s ease-in-out;
         }
 
-        /* Reception View */
-        .mode-reception #portal-stage {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-            padding: 40px;
-            box-sizing: border-box;
-            height: 100vh;
+        /* Mode: Reception Styles */
+        .mode-reception #reception-stage {
+            opacity: 1;
+            pointer-events: all;
         }
 
-        .mode-reception .participant-orb {
-            border: 1px solid rgba(212, 212, 200, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
+        .mode-reception #ritual-stage {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.1);
         }
 
-        .mode-reception #curtain {
-            display: none;
+        /* Mode: Portal Styles */
+        .mode-portal #reception-stage {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.9);
         }
 
-        /* Portal View */
-        .mode-portal #portal-stage {
-            display: block;
-            position: relative;
-            height: 100vh;
+        .mode-portal #ritual-stage {
+            opacity: 1;
+            pointer-events: all;
         }
 
-        .mode-portal .participant-orb {
+        /* Ritual Orb Layout */
+        .participant-orb {
             position: absolute;
             border-radius: 50%;
             width: 250px;
             height: 250px;
             filter: blur(1px) drop-shadow(0 0 30px rgba(212, 212, 200, 0.1));
-            transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba(212, 212, 200, 0.3);
             overflow: hidden;
+            transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .mode-portal #tony-orb {
+        #tony-orb {
             top: 15%;
-            left: 8%;
+            left: 10%;
         }
 
-        .mode-portal #court-orb {
+        #court-orb {
             top: 15%;
-            right: 8%;
+            right: 10%;
         }
 
-        .mode-portal #mike-orb {
+        #mike-orb {
             bottom: 10%;
             left: 50%;
             transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
         }
 
+        /* The Veil */
         #curtain {
             position: fixed;
             top: 0;
@@ -94,6 +98,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            pointer-events: none;
+            opacity: 1;
         }
 
         #arrival-mask {
@@ -120,25 +126,13 @@
             font-size: 1rem;
         }
 
-        #omen-container {
-            position: fixed;
-            bottom: 25%;
-            width: 100%;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 2s;
-            font-size: 1.4rem;
-            letter-spacing: 0.3em;
-            text-shadow: 0 0 20px rgba(212, 212, 200, 0.5);
-        }
-
         iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
 
-        #my-camera-feed {
+        #my-camera-engine {
             position: fixed;
             top: -1000px;
         }
@@ -148,7 +142,7 @@
             bottom: 10px;
             left: 10px;
             font-size: 0.5rem;
-            opacity: 0.4;
+            opacity: 0.3;
             z-index: 10000;
             font-family: monospace;
         }
@@ -163,37 +157,40 @@
         <button class="ritual-btn" onclick="startTheRitual()">ENTER THE SPACE</button>
     </div>
 
-    <!-- The actual camera engine -->
-    <iframe id="my-camera-feed" allow="autoplay;camera;microphone;fullscreen"></iframe>
+    <!-- RECEPTION STAGE (VDO.Ninja UI) -->
+    <div id="reception-stage">
+        <iframe id="reception-iframe" allow="autoplay;camera;microphone;fullscreen"></iframe>
+    </div>
 
-    <div id="vessel">
-        <div id="portal-stage">
-            <div id="tony-orb" class="participant-orb"></div>
-            <div id="mike-orb" class="participant-orb"></div>
-            <div id="court-orb" class="participant-orb"></div>
-        </div>
+    <!-- RITUAL STAGE (Magical Orbs) -->
+    <div id="ritual-stage">
+        <div id="tony-orb" class="participant-orb"></div>
+        <div id="mike-orb" class="participant-orb"></div>
+        <div id="court-orb" class="participant-orb"></div>
 
         <div id="curtain">
             <div style="font-size: 0.7rem; letter-spacing: 1em; opacity: 0.3;">THE SPECTRAL VEIL</div>
         </div>
 
-        <div id="omen-container">
-            <p id="omen-text"></p>
+        <div id="omen-container"
+            style="position:fixed; bottom:25%; width:100%; text-align:center; opacity:0; transition:2s;">
+            <p id="omen-text" style="font-size:1.4rem; letter-spacing:0.3em;"></p>
         </div>
     </div>
 
+    <!-- Hidden Engine to pump camera if needed -->
+    <iframe id="my-camera-engine" allow="autoplay;camera;microphone;fullscreen"></iframe>
+
     <script>
-        // Set Role from URL
         const params = new URLSearchParams(window.location.search);
         window.participantRole = params.get('role') || 'court';
-        document.getElementById('debug-status').textContent = `ROLE: ${window.participantRole.toUpperCase()} | SYNC: CONNECTING...`;
+        document.getElementById('debug-status').textContent = `ROLE: ${window.participantRole.toUpperCase()} | READY`;
 
         function startTheRitual() {
-            console.log('Starting ritual sequence...');
             document.getElementById('arrival-mask').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('arrival-mask').style.display = 'none';
-                if (window.updateAllFeeds) window.updateAllFeeds();
+                if (window.updateSystem) window.updateSystem();
             }, 1000);
         }
     </script>
