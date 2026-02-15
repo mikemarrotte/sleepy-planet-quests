@@ -7,7 +7,7 @@
     <title>The Common Space | Pass-through Test</title>
     <style>
         body {
-            background: #0d110d;
+            background: #000;
             color: #d4d4c8;
             font-family: 'Newsreader', serif;
             margin: 0;
@@ -23,7 +23,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #0d110d;
+            background: #000;
             z-index: 3000;
             display: flex;
             align-items: center;
@@ -44,12 +44,12 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             flex: 1;
-            gap: 10px;
-            padding: 10px;
+            gap: 4px;
+            padding: 4px;
         }
 
         .video-box {
-            background: #000;
+            background: #050505;
             position: relative;
             border: 1px solid rgba(212, 212, 200, 0.1);
         }
@@ -58,11 +58,12 @@
             position: absolute;
             top: 10px;
             left: 10px;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             padding: 5px 10px;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             z-index: 10;
             pointer-events: none;
+            letter-spacing: 0.1em;
         }
 
         iframe {
@@ -79,9 +80,6 @@
         <button class="ritual-btn" onclick="activateView()">ENTER THE COMMON SPACE</button>
     </div>
 
-    <div style="padding: 10px; opacity: 0.5; font-size: 0.7rem; letter-spacing: 0.2em; text-align: center;">THE COMMON
-        SPACE (PASS-THROUGH)</div>
-
     <div class="test-grid">
         <div class="video-box">
             <div class="label">TONY</div>
@@ -94,20 +92,23 @@
     </div>
 
     <script>
+        const ROOM = 'Ritual_Room_111';
+
         function activateView() {
             document.getElementById('arrival-mask').style.display = 'none';
 
             const tonySlot = document.getElementById('tony-slot');
             const courtSlot = document.getElementById('court-slot');
-            const cacheBuster = Date.now();
 
-            // Load Tony first
-            tonySlot.innerHTML = `<iframe src="https://vdo.ninja/?view=TonyPort&autoplay=1&autostart=1&cleanviewer=1&mute=1&noheader=1&nomenu=1&transparent=1&_=${cacheBuster}"></iframe>`;
+            // Force View of specific Stream IDs within the same room
+            // &view=ID is the key to bypassing the "Join" screen as a watcher
+            const baseParams = `&room=${ROOM}&autoplay=1&autostart=1&cleanviewer=1&mute=1&noheader=1&nomenu=1&scale=100`;
 
-            // Wait 1 second before loading Court to avoid simultaneous request conflict
+            tonySlot.innerHTML = `<iframe src="https://vdo.ninja/?view=TonyPort${baseParams}"></iframe>`;
+
             setTimeout(() => {
-                courtSlot.innerHTML = `<iframe src="https://vdo.ninja/?view=CourtPort&autoplay=1&autostart=1&cleanviewer=1&mute=1&noheader=1&nomenu=1&transparent=1&_=${cacheBuster}"></iframe>`;
-            }, 1000);
+                courtSlot.innerHTML = `<iframe src="https://vdo.ninja/?view=CourtPort${baseParams}"></iframe>`;
+            }, 800);
         }
     </script>
 </body>
