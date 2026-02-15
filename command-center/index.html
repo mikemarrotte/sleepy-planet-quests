@@ -6,268 +6,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Command Center</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         body {
-            background-color: #0d110d;
+            background: #0d110d;
             color: #d4d4c8;
             font-family: 'Newsreader', serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            padding: 2rem;
             margin: 0;
         }
 
         h1 {
             font-weight: 200;
             letter-spacing: 0.2em;
-            margin-bottom: 2rem;
             color: rgba(212, 212, 200, 0.5);
         }
 
         .controls {
-            display: grid;
-            gap: 1.5rem;
-            width: 80%;
+            width: 100%;
             max-width: 400px;
+            display: grid;
+            gap: 1rem;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(212, 212, 200, 0.2);
+            color: #d4d4c8;
+            padding: 0.8rem;
+            text-align: center;
+            font-family: inherit;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         button {
             background: transparent;
             border: 1px solid rgba(212, 212, 200, 0.3);
             color: #d4d4c8;
-            padding: 1.5rem;
-            font-size: 1rem;
+            padding: 1.2rem;
+            font-size: 0.9rem;
             letter-spacing: 0.1em;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
         button:hover {
             background: rgba(212, 212, 200, 0.1);
-            border-color: rgba(212, 212, 200, 0.8);
         }
 
-        button:active {
-            transform: scale(0.98);
+        .active {
+            background: #4a5e4a !important;
+            border-color: #d4d4c8 !important;
+            box-shadow: 0 0 15px rgba(74, 94, 74, 0.5);
         }
 
-        .omen-input {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid rgba(212, 212, 200, 0.3);
-            color: #d4d4c8;
-            padding: 0.5rem;
-            font-family: inherit;
-            text-align: center;
+        #debug {
+            font-size: 0.7rem;
             margin-top: 1rem;
-            width: 100%;
-        }
-
-        .active-state {
-            background-color: rgba(74, 94, 74, 0.4) !important;
-            border-color: #4a5e4a !important;
-            box-shadow: 0 0 15px #4a5e4a;
+            color: #5e4a4a;
+            font-family: monospace;
         }
     </style>
 </head>
 
 <body>
-    <div style="position: fixed; top: 10px; right: 10px; display: flex; align-items: center; gap: 8px;">
-        <div id="sync-status"
-            style="width: 10px; height: 10px; border-radius: 50%; background: #5e4a4a; transition: background 0.5s;">
-        </div>
-        <span style="font-size: 0.6rem; color: rgba(212,212,200,0.3); letter-spacing: 0.1em;">SYNC</span>
+    <div id="sync-status"
+        style="width: 10px; height: 10px; border-radius: 50%; background: #5e4a4a; position: fixed; top: 20px; right: 20px;">
     </div>
     <h1>COMMAND CENTER</h1>
-    <div id="debug-status" style="font-size: 0.6rem; color: #5e4a4a; margin-bottom: 2rem;">SYNC: INITIALIZING...</div>
+    <div id="debug">SYNC: STANDBY</div>
 
     <div class="controls">
-        <div style="display: grid; gap: 0.5rem;">
-            <input type="text" id="tony-sid" class="omen-input" placeholder="Tony ID (e.g. REXPq4b)">
-            <input type="text" id="court-sid" class="omen-input" placeholder="Court ID (e.g. K8Hep63)">
-            <input type="text" id="room-name" class="omen-input" placeholder="Room Name (TheCommonRoom_111)">
-            <input type="text" id="room-pass" class="omen-input" placeholder="Room Password (sleepyplanet)">
-            <button id="btn-update" onclick="updateStreams()">UPDATE STREAMS</button>
-            <button id="btn-refresh" onclick="sendCommand('REFRESH_FEEDS', this)"
-                style="margin-top: 0.5rem; font-size: 0.7rem; padding: 0.5rem;">REFRESH FEEDS</button>
-        </div>
-        <hr style="width: 100%; border: 0.5px solid rgba(212, 212, 200, 0.1); margin: 1rem 0;">
-        <button id="btn-ambient" onclick="toggleState('START_AMBIENT', this)">INVOKE AMBIENT</button>
-        <button id="btn-curtain" onclick="toggleState('CURTAIN', this)">OPEN CURTAIN</button>
-
-        <div style="margin-top: 1.5rem; border: 1px solid rgba(212, 212, 200, 0.1); padding: 1rem;">
-            <div
-                style="font-size: 0.7rem; color: rgba(212, 212, 200, 0.4); margin-bottom: 0.5rem; letter-spacing: 0.1em; text-align: center;">
-                RITUAL SCRIPT</div>
-            <textarea id="script-input" class="omen-input" style="height: 100px; font-size: 0.8rem; text-align: left;"
-                placeholder="Paste script lines here..."></textarea>
-            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                <button onclick="prevLine()" style="flex: 1; padding: 0.5rem; font-size: 0.7rem;">PREV</button>
-                <div id="line-counter"
-                    style="display: flex; align-items: center; font-size: 0.7rem; color: rgba(212,212,200,0.5);">0 / 0
-                </div>
-                <button onclick="nextLine()" style="flex: 1; padding: 0.5rem; font-size: 0.7rem;">NEXT</button>
-            </div>
-            <input type="text" id="omen-val" class="omen-input" placeholder="Selected line..."
-                style="margin-top: 0.5rem; font-style: italic;">
-            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                <button id="btn-omen" onclick="sendOmen()" style="flex: 3; border-top: none;">ACTIVATE OMEN</button>
-                <button onclick="clearOmen()" style="flex: 1; border-top: none; border-left: none;">CLEAR</button>
-            </div>
-        </div>
+        <input type="text" id="tony-id" value="TonyPort" placeholder="Tony Stream ID">
+        <input type="text" id="court-id" value="CourtPort" placeholder="Court Stream ID">
+        <input type="text" id="room-id" value="TheCommonRoom_Mike" placeholder="Room Name">
+        <button onclick="initFeeds()">INITIATE RITUAL FEEDS</button>
+        <hr style="width: 100%; opacity: 0.1; margin: 1rem 0;">
+        <button id="curtain-btn" onclick="toggleCurtain()">OPEN CURTAIN</button>
+        <button onclick="broadcast({type: 'START_AMBIENT'})">START AMBIENT</button>
+        <button onclick="broadcast({type: 'STOP_AMBIENT'})">STOP AMBIENT</button>
+        <input type="text" id="omen-text" placeholder="Type an Omen here...">
+        <button onclick="broadcast({type: 'ACTIVATE_OMEN', text: document.getElementById('omen-text').value})">SEND
+            OMEN</button>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
-
-        let attempts = 0; // RE-LOCATED
-        let supabase;
-        let ritualChannel;
-
-        function initSupabase() {
-            const debugStatus = document.getElementById('debug-status');
-            if (typeof window.supabase !== 'undefined') {
-                try {
-                    if (debugStatus) debugStatus.textContent = 'SYNC: CONNECTING...';
-                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                    ritualChannel = supabase.channel('common_space_ritual', {
-                        config: {
-                            broadcast: { self: true }
-                        }
-                    });
-
-                    ritualChannel.subscribe((status) => {
-                        const statusLight = document.getElementById('sync-status');
-                        const debugStatus = document.getElementById('debug-status');
-                        if (statusLight) {
-                            statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
-                            statusLight.title = `Status: ${status}`;
-                        }
-                        if (debugStatus) {
-                            debugStatus.textContent = `SYNC: ${status}`;
-                            debugStatus.style.color = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
-                        }
-                    });
-                } catch (err) {
-                    if (debugStatus) debugStatus.textContent = `SYNC ERROR: ${err.message}`;
-                }
-            } else if (attempts < 20) {
-                attempts++;
-                if (debugStatus) debugStatus.textContent = `SYNC: LOADING SDK (${attempts}/20)...`;
-                setTimeout(initSupabase, 500);
-            }
-        }
-
-        initSupabase();
-
-        const localChannel = new BroadcastChannel('common_space_ritual');
-
-        let scriptLines = [];
-        let currentLineIndex = -1;
+        let supabase, channel;
         let curtainOpen = false;
-        let ambientOn = false;
 
-        function broadcast(data) {
-            try {
-                // Send via Supabase for remote devices
-                if (ritualChannel && ritualChannel.state === 'joined') {
-                    ritualChannel.send({
-                        type: 'broadcast',
-                        event: 'command',
-                        payload: data
-                    });
-                }
-            } catch (err) {
-                console.error('Supabase Broadcast Error:', err);
-            }
+        function connect() {
+            if (typeof window.supabase === 'undefined') { setTimeout(connect, 500); return; }
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            channel = supabase.channel('common_space_ritual', { config: { broadcast: { self: true } } });
+            channel.subscribe(status => {
+                document.getElementById('debug').textContent = `SYNC: ${status}`;
+                document.getElementById('sync-status').style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+            });
+        }
+        connect();
 
-            // Send via BroadcastChannel for local tabs (always works)
-            if (localChannel) {
-                localChannel.postMessage(data);
-            }
+        function broadcast(msg) {
+            if (channel) channel.send({ type: 'broadcast', event: 'command', payload: msg });
+            new BroadcastChannel('common_space_ritual').postMessage(msg);
         }
 
-        function updateStreams() {
-            const tony = document.getElementById('tony-sid').value;
-            const court = document.getElementById('court-sid').value;
-            const room = document.getElementById('room-name').value;
-            const pass = document.getElementById('room-pass').value;
-
-            flashButton(document.getElementById('btn-update'), '#4a5e4a');
-            broadcast({ type: 'UPDATE_STREAMS', tony, court, room, pass });
+        function initFeeds() {
+            broadcast({
+                type: 'UPDATE_STREAMS',
+                tony: document.getElementById('tony-id').value,
+                court: document.getElementById('court-id').value,
+                room: document.getElementById('room-id').value
+            });
         }
 
-        function toggleState(type, btn) {
-            if (type === 'START_AMBIENT') {
-                ambientOn = !ambientOn;
-                btn.classList.toggle('active-state', ambientOn);
-                broadcast({ type: ambientOn ? 'START_AMBIENT' : 'STOP_AMBIENT' });
-            } else if (type === 'CURTAIN') {
-                curtainOpen = !curtainOpen;
-                btn.classList.toggle('active-state', curtainOpen);
-                btn.textContent = curtainOpen ? 'CLOSE CURTAIN' : 'OPEN CURTAIN';
-                broadcast({ type: curtainOpen ? 'OPEN_CURTAIN' : 'CLOSE_CURTAIN' });
-            }
-        }
-
-        function sendCommand(cmd, btn) {
-            flashButton(btn, '#4a5e4a');
-            broadcast({ type: cmd });
-        }
-
-        function flashButton(btn, color) {
-            if (!btn) return;
-            const originalBg = btn.style.backgroundColor;
-            btn.style.backgroundColor = 'rgba(74, 94, 74, 0.2)';
-            setTimeout(() => {
-                btn.style.backgroundColor = originalBg;
-            }, 500);
-        }
-
-        // Script Management
-        document.getElementById('script-input').addEventListener('input', (e) => {
-            scriptLines = e.target.value.split('\n').filter(line => line.trim() !== '');
-            updateCounter();
-        });
-
-        function updateCounter() {
-            const counter = document.getElementById('line-counter');
-            if (counter) counter.textContent = `${currentLineIndex + 1} / ${scriptLines.length}`;
-        }
-
-        function nextLine() {
-            if (currentLineIndex < scriptLines.length - 1) {
-                currentLineIndex++;
-                updateOmenInput();
-            }
-        }
-
-        function prevLine() {
-            if (currentLineIndex > 0) {
-                currentLineIndex--;
-                updateOmenInput();
-            }
-        }
-
-        function updateOmenInput() {
-            const input = document.getElementById('omen-val');
-            input.value = scriptLines[currentLineIndex] || "";
-            updateCounter();
-        }
-
-        function sendOmen() {
-            const val = document.getElementById('omen-val').value;
-            broadcast({ type: 'ACTIVATE_OMEN', text: val });
-            flashButton(document.getElementById('btn-omen'), '#4a5e4a');
-        }
-
-        function clearOmen() {
-            broadcast({ type: 'CLEAR_OMEN' });
-            document.getElementById('omen-val').value = "";
+        function toggleCurtain() {
+            curtainOpen = !curtainOpen;
+            const btn = document.getElementById('curtain-btn');
+            btn.classList.toggle('active', curtainOpen);
+            btn.textContent = curtainOpen ? 'CLOSE CURTAIN' : 'OPEN CURTAIN';
+            broadcast({ type: curtainOpen ? 'OPEN_CURTAIN' : 'CLOSE_CURTAIN' });
         }
     </script>
 </body>
