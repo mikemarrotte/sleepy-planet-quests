@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Common Space | View-Only Test</title>
+    <title>The Common Space | Pass-through Test</title>
     <style>
         body {
             background: #0d110d;
@@ -14,6 +14,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            overflow: hidden;
         }
 
         #arrival-mask {
@@ -61,12 +62,14 @@
             padding: 5px 10px;
             font-size: 0.7rem;
             z-index: 10;
+            pointer-events: none;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -77,9 +80,9 @@
     </div>
 
     <div style="padding: 10px; opacity: 0.5; font-size: 0.7rem; letter-spacing: 0.2em; text-align: center;">THE COMMON
-        SPACE (VIEWING MODE)</div>
+        SPACE (PASS-THROUGH)</div>
 
-    <div class="test-grid" id="grid">
+    <div class="test-grid">
         <div class="video-box">
             <div class="label">TONY</div>
             <div id="tony-slot" style="height:100%"></div>
@@ -91,15 +94,20 @@
     </div>
 
     <script>
-        const ROOM = 'Ritual_Room_111';
-
         function activateView() {
             document.getElementById('arrival-mask').style.display = 'none';
 
-            // WE ARE NOT PUSHING HERE. We are only viewing the 2 participant "Channels".
-            // Since there is no &push=, VDO.Ninja will not ask for camera permission.
-            document.getElementById('tony-slot').innerHTML = `<iframe src="https://vdo.ninja/?room=${ROOM}&view=TonyPort&autoplay=1&autostart=1&cleanviewer=1&mute=1" allow="autoplay;fullscreen"></iframe>`;
-            document.getElementById('court-slot').innerHTML = `<iframe src="https://vdo.ninja/?room=${ROOM}&view=CourtPort&autoplay=1&autostart=1&cleanviewer=1&mute=1" allow="autoplay;fullscreen"></iframe>`;
+            const tonySlot = document.getElementById('tony-slot');
+            const courtSlot = document.getElementById('court-slot');
+            const cacheBuster = Date.now();
+
+            // Load Tony first
+            tonySlot.innerHTML = `<iframe src="https://vdo.ninja/?view=TonyPort&autoplay=1&autostart=1&cleanviewer=1&mute=1&noheader=1&nomenu=1&transparent=1&_=${cacheBuster}"></iframe>`;
+
+            // Wait 1 second before loading Court to avoid simultaneous request conflict
+            setTimeout(() => {
+                courtSlot.innerHTML = `<iframe src="https://vdo.ninja/?view=CourtPort&autoplay=1&autostart=1&cleanviewer=1&mute=1&noheader=1&nomenu=1&transparent=1&_=${cacheBuster}"></iframe>`;
+            }, 1000);
         }
     </script>
 </body>
