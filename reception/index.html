@@ -4,123 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reception | Ritual Monitor</title>
+    <title>Reception | Front Desk</title>
     <style>
         body {
             background: #050705;
             color: #d4d4c8;
             font-family: 'Newsreader', serif;
             margin: 0;
+            padding: 20px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
             overflow: hidden;
-        }
-
-        .header {
-            text-align: center;
-            padding: 20px 0;
-            opacity: 0.4;
-            letter-spacing: 0.5em;
-            font-size: 0.8rem;
         }
 
         .monitor-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             flex: 1;
-            gap: 2px;
-            /* Cinematic slit look */
-            background: rgba(212, 212, 200, 0.05);
+            gap: 15px;
         }
 
         .monitor-box {
             background: #000;
+            border: 1px solid rgba(212, 212, 200, 0.1);
+            border-radius: 12px;
             position: relative;
             overflow: hidden;
         }
 
         .label {
             position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.6rem;
-            letter-spacing: 0.3em;
-            color: rgba(212, 212, 200, 0.3);
-            z-index: 10;
-        }
-
-        /* The Big "Start" Button Overlay */
-        #activator {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(13, 17, 13, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            cursor: pointer;
-        }
-
-        .btn-inner {
-            border: 1px solid rgba(212, 212, 200, 0.3);
-            padding: 40px 80px;
-            font-size: 1.2rem;
-            letter-spacing: 0.2rem;
-            color: #d4d4c8;
-            transition: all 0.5s;
-        }
-
-        .btn-inner:hover {
-            background: rgba(212, 212, 200, 0.1);
-            border-color: #d4d4c8;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            z-index: 100;
+            border: 1px solid rgba(212, 212, 200, 0.1);
+            pointer-events: none;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none;
         }
     </style>
 </head>
 
 <body>
-    <div id="activator" onclick="activate()">
-        <div class="btn-inner">ACTIVATE THE VESSEL</div>
+    <div style="text-align: center; padding-bottom: 20px; opacity: 0.5; letter-spacing: 0.5em;">RECEPTION MONITOR</div>
+
+    <div class="monitor-grid">
+        <!-- TONY -->
+        <div class="monitor-box">
+            <div class="label">TONY</div>
+            <iframe src="https://vdo.ninja/?room=Ritual_Room_111&view=TonyPort&autoplay=1&autostart=1&cleanviewer=1"
+                allow="autoplay;camera;microphone;fullscreen"></iframe>
+        </div>
+
+        <!-- MIKE (YOU) -->
+        <div class="monitor-box" style="border-color: rgba(212,212,200,0.4);">
+            <div class="label">YOU (MIKE)</div>
+            <iframe src="https://vdo.ninja/?room=Ritual_Room_111&push=MikePort&cleanviewer=1"
+                allow="autoplay;camera;microphone;fullscreen"></iframe>
+        </div>
+
+        <!-- COURT -->
+        <div class="monitor-box">
+            <div class="label">COURT</div>
+            <iframe src="https://vdo.ninja/?room=Ritual_Room_111&view=CourtPort&autoplay=1&autostart=1&cleanviewer=1"
+                allow="autoplay;camera;microphone;fullscreen"></iframe>
+        </div>
     </div>
-
-    <div class="header">RECEPTION MONITOR</div>
-
-    <div class="monitor-grid" id="grid">
-        <!-- Videos initialized on click -->
-    </div>
-
-    <script>
-        function activate() {
-            const grid = document.getElementById('grid');
-            // Pipe Labels: Tony_111, Mike_111, Court_111
-            grid.innerHTML = `
-                <div class="monitor-box">
-                    <div class="label">TONY (PHASE 1)</div>
-                    <iframe src="https://vdo.ninja/?view=Tony_111&autoplay=1&autostart=1&cleanviewer=1&mute=1"></iframe>
-                </div>
-                <div class="monitor-box">
-                    <div class="label">YOU (PHASE 0)</div>
-                    <iframe src="https://vdo.ninja/?push=Mike_111&view=none&cleanviewer=1&autoplay=1&autostart=1"></iframe>
-                </div>
-                <div class="monitor-box">
-                    <div class="label">COURT (PHASE 2)</div>
-                    <iframe src="https://vdo.ninja/?view=Court_111&autoplay=1&autostart=1&cleanviewer=1&mute=1"></iframe>
-                </div>
-            `;
-            document.getElementById('activator').style.display = 'none';
-        }
-    </script>
 </body>
 
 </html>
