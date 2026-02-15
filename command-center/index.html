@@ -4,125 +4,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Command Center</title>
+    <title>Ritual Command Center</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            background: #0d110d;
+            background: #0a0a0a;
             color: #d4d4c8;
             font-family: 'Newsreader', serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem;
-            margin: 0;
+            padding: 20px;
         }
 
-        h1 {
-            font-weight: 200;
-            letter-spacing: 0.2em;
-            color: rgba(212, 212, 200, 0.5);
-        }
-
-        .controls {
-            width: 100%;
-            max-width: 400px;
+        .control-panel {
+            max-width: 800px;
+            margin: 0 auto;
             display: grid;
-            gap: 1rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        input {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid rgba(212, 212, 200, 0.2);
-            color: #d4d4c8;
-            padding: 0.8rem;
-            text-align: center;
-            font-family: inherit;
-            width: 100%;
-            box-sizing: border-box;
+        .box {
+            border: 1px solid rgba(212, 212, 200, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            background: #111;
+        }
+
+        h2 {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            margin-top: 0;
         }
 
         button {
-            background: transparent;
-            border: 1px solid rgba(212, 212, 200, 0.3);
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #1a1a1a;
+            border: 1px solid rgba(212, 212, 200, 0.2);
             color: #d4d4c8;
-            padding: 1.2rem;
-            font-size: 0.9rem;
-            letter-spacing: 0.1em;
             cursor: pointer;
-            transition: all 0.3s;
+            letter-spacing: 0.1em;
         }
 
         button:hover {
-            background: rgba(212, 212, 200, 0.1);
+            background: #222;
         }
 
-        .active {
-            background: #4a5e4a !important;
-            border-color: #d4d4c8 !important;
-            box-shadow: 0 0 15px rgba(74, 94, 74, 0.5);
+        button.active {
+            border-color: #4a5e4a;
+            color: #7a9e7a;
+            box-shadow: 0 0 10px rgba(74, 94, 74, 0.3);
         }
 
-        #debug {
-            font-size: 0.7rem;
-            margin-top: 1rem;
-            color: #5e4a4a;
-            font-family: monospace;
+        button.danger {
+            border-color: #5e4a4a;
+            color: #9e7a7a;
+        }
+
+        #sync-status {
+            font-size: 0.6rem;
+            opacity: 0.4;
+            margin-top: 10px;
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
-    <div id="sync-status"
-        style="width: 10px; height: 10px; border-radius: 50%; background: #5e4a4a; position: fixed; top: 20px; right: 20px;">
-    </div>
-    <h1>COMMAND CENTER</h1>
-    <div id="debug">SYNC: STANDBY</div>
 
-    <div class="controls">
-        <input type="text" id="tony-id" value="TonyPort" placeholder="Tony Stream ID">
-        <input type="text" id="court-id" value="CourtPort" placeholder="Court Stream ID">
-        <input type="text" id="room-id" value="Ritual_Room_111" placeholder="Room Name">
-        <button onclick="initFeeds()">INITIATE RITUAL FEEDS</button>
-        <hr style="width: 100%; opacity: 0.1; margin: 1rem 0;">
-        <button id="curtain-btn" onclick="toggleCurtain()">OPEN CURTAIN</button>
-        <button onclick="broadcast({type: 'START_AMBIENT'})">START AMBIENT</button>
-        <button onclick="broadcast({type: 'STOP_AMBIENT'})">STOP AMBIENT</button>
-        <input type="text" id="omen-text" placeholder="Type an Omen here...">
-        <button onclick="broadcast({type: 'ACTIVATE_OMEN', text: document.getElementById('omen-text').value})">SEND
-            OMEN</button>
+    <div class="control-panel">
+        <!-- GLOBAL MODE -->
+        <div class="box" style="grid-column: span 2;">
+            <h2>SPACE STATE</h2>
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-reception" onclick="setMode('reception')">1. RECEPTION MODE</button>
+                <button id="btn-portal" onclick="setMode('portal')">2. ACTIVATE PORTAL</button>
+            </div>
+        </div>
+
+        <!-- VOICE CONTROL -->
+        <div class="box">
+            <h2>MIC CONTROL</h2>
+            <button id="mute-court" onclick="toggleMute('court')">MUTE COURT</button>
+            <button id="mute-tony" onclick="toggleMute('tony')">MUTE TONY</button>
+        </div>
+
+        <!-- REVEAL CONTROL -->
+        <div class="box">
+            <h2>REVEAL</h2>
+            <button id="curtain-btn" onclick="toggleCurtain()">OPEN CURTAIN</button>
+        </div>
     </div>
+
+    <div id="sync-status">SYNC: INITIALIZING</div>
 
     <script>
         const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
-        let supabase, channel;
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const channel = supabase.channel('common_space_ritual');
+        channel.subscribe(status => document.getElementById('sync-status').textContent = `SYNC: ${status}`);
+
+        let muteState = { tony: false, court: false };
         let curtainOpen = false;
 
-        function connect() {
-            if (typeof window.supabase === 'undefined') { setTimeout(connect, 500); return; }
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            channel = supabase.channel('common_space_ritual', { config: { broadcast: { self: true } } });
-            channel.subscribe(status => {
-                document.getElementById('debug').textContent = `SYNC: ${status}`;
-                document.getElementById('sync-status').style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
-            });
-        }
-        connect();
+        function broadcast(cmd) { channel.send({ type: 'broadcast', event: 'command', payload: cmd }); }
 
-        function broadcast(msg) {
-            if (channel) channel.send({ type: 'broadcast', event: 'command', payload: msg });
-            new BroadcastChannel('common_space_ritual').postMessage(msg);
+        function setMode(m) {
+            document.getElementById('btn-reception').classList.toggle('active', m === 'reception');
+            document.getElementById('btn-portal').classList.toggle('active', m === 'portal');
+            broadcast({ type: 'SET_MODE', mode: m });
         }
 
-        function initFeeds() {
-            broadcast({
-                type: 'UPDATE_STREAMS',
-                tony: document.getElementById('tony-id').value,
-                court: document.getElementById('court-id').value,
-                room: document.getElementById('room-id').value
-            });
+        function toggleMute(who) {
+            muteState[who] = !muteState[who];
+            const btn = document.getElementById(`mute-${who}`);
+            btn.classList.toggle('danger', muteState[who]);
+            btn.textContent = muteState[who] ? `UNMUTE ${who.toUpperCase()}` : `MUTE ${who.toUpperCase()}`;
+            broadcast({ type: 'MUTE_CONTROL', target: who, state: muteState[who] });
         }
 
         function toggleCurtain() {
