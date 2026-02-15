@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Common Space | Pass-through Test</title>
+    <title>The Common Space | Global Monitor</title>
     <style>
         body {
             background: #000;
@@ -92,22 +92,21 @@
     </div>
 
     <script>
-        const ROOM = 'Ritual_Room_111';
+        // Global Unique Channels (No Room needed)
+        const TONY_CHANNEL = 'Tony_Ritual_777';
+        const COURT_CHANNEL = 'Court_Ritual_777';
 
         function activateView() {
             document.getElementById('arrival-mask').style.display = 'none';
 
-            const tonySlot = document.getElementById('tony-slot');
-            const courtSlot = document.getElementById('court-slot');
+            // WE REMOVED &room= to bypass the Room Join Screens entirely.
+            // These are direct viewers of the global stream IDs.
+            const baseParams = `&autoplay=1&autostart=1&cleanviewer=1&mute=1&noheader=1&nomenu=1&scale=100&transparent=1`;
 
-            // Force View of specific Stream IDs within the same room
-            // &view=ID is the key to bypassing the "Join" screen as a watcher
-            const baseParams = `&room=${ROOM}&autoplay=1&autostart=1&cleanviewer=1&mute=1&noheader=1&nomenu=1&scale=100`;
-
-            tonySlot.innerHTML = `<iframe src="https://vdo.ninja/?view=TonyPort${baseParams}"></iframe>`;
+            document.getElementById('tony-slot').innerHTML = `<iframe src="https://vdo.ninja/?view=${TONY_CHANNEL}${baseParams}"></iframe>`;
 
             setTimeout(() => {
-                courtSlot.innerHTML = `<iframe src="https://vdo.ninja/?view=CourtPort${baseParams}"></iframe>`;
+                document.getElementById('court-slot').innerHTML = `<iframe src="https://vdo.ninja/?view=${COURT_CHANNEL}${baseParams}"></iframe>`;
             }, 800);
         }
     </script>
