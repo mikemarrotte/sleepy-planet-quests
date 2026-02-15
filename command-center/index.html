@@ -4,133 +4,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ritual Command Center</title>
+    <title>Ritual Master Command</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background: #0a0a0a;
             color: #d4d4c8;
             font-family: 'Newsreader', serif;
-            padding: 20px;
+            padding: 40px;
         }
 
-        .control-panel {
-            max-width: 800px;
+        .master-grid {
+            max-width: 900px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .vdo-panel {
+            background: #000;
+            border: 1px solid rgba(212, 212, 200, 0.1);
+            height: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            grid-column: span 2;
+        }
+
+        .control-panel {
+            grid-column: span 2;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
         }
 
-        .box {
-            border: 1px solid rgba(212, 212, 200, 0.1);
-            padding: 20px;
-            border-radius: 10px;
+        textarea {
+            width: 100%;
+            height: 100px;
             background: #111;
-        }
-
-        h2 {
-            font-size: 0.8rem;
-            letter-spacing: 0.2em;
-            opacity: 0.5;
-            margin-top: 0;
+            border: 1px solid rgba(212, 212, 200, 0.3);
+            color: #d4d4c8;
+            padding: 20px;
+            font-family: inherit;
+            font-size: 1.2rem;
+            border-radius: 8px;
         }
 
         button {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            background: #1a1a1a;
-            border: 1px solid rgba(212, 212, 200, 0.2);
-            color: #d4d4c8;
+            padding: 20px;
+            background: #222;
+            border: 1px solid var(--gold);
+            color: var(--gold);
             cursor: pointer;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.2em;
+            font-size: 0.8rem;
         }
 
         button:hover {
-            background: #222;
+            background: #282828;
         }
 
-        button.active {
-            border-color: #4a5e4a;
-            color: #7a9e7a;
-            box-shadow: 0 0 10px rgba(74, 94, 74, 0.3);
+        .presets {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        button.danger {
-            border-color: #5e4a4a;
-            color: #9e7a7a;
-        }
-
-        #sync-status {
-            font-size: 0.6rem;
-            opacity: 0.4;
-            margin-top: 10px;
-            text-align: center;
+        .preset-btn {
+            padding: 8px 15px;
+            font-size: 0.7rem;
+            border-color: rgba(212, 212, 200, 0.2);
         }
     </style>
 </head>
 
 <body>
 
-    <div class="control-panel">
-        <!-- GLOBAL MODE -->
-        <div class="box" style="grid-column: span 2;">
-            <h2>SPACE STATE</h2>
-            <div style="display: flex; gap: 10px;">
-                <button id="btn-reception" onclick="setMode('reception')">1. RECEPTION MODE</button>
-                <button id="btn-portal" onclick="setMode('portal')">2. ACTIVATE PORTAL</button>
+    <div class="master-grid">
+        <div class="vdo-panel">
+            <!-- Full Director Control -->
+            <iframe src="https://vdo.ninja/?director=TheIntroduction_2024"
+                allow="autoplay;camera;microphone;fullscreen"></iframe>
+        </div>
+
+        <div class="control-panel">
+            <h2>LIVE INSTRUCTIONS</h2>
+            <textarea id="instruction-input" placeholder="Enter what they should see now..."></textarea>
+            <button onclick="pushInstruction()">PUSH TO THE SPACE</button>
+
+            <div class="presets">
+                <button class="preset-btn"
+                    onclick="setPreset('Tony will tell the story. Court, please listen with your body.')">PRESET: TONY
+                    START</button>
+                <button class="preset-btn" onclick="setPreset('You are now free to talk.')">PRESET: FREE TALK</button>
+                <button class="preset-btn" onclick="setPreset('Your time in this shared space is running out.')">PRESET:
+                    TIME WARNING</button>
             </div>
         </div>
-
-        <!-- VOICE CONTROL -->
-        <div class="box">
-            <h2>MIC CONTROL</h2>
-            <button id="mute-court" onclick="toggleMute('court')">MUTE COURT</button>
-            <button id="mute-tony" onclick="toggleMute('tony')">MUTE TONY</button>
-        </div>
-
-        <!-- REVEAL CONTROL -->
-        <div class="box">
-            <h2>REVEAL</h2>
-            <button id="curtain-btn" onclick="toggleCurtain()">OPEN CURTAIN</button>
-        </div>
     </div>
-
-    <div id="sync-status">SYNC: INITIALIZING</div>
 
     <script>
         const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const channel = supabase.channel('common_space_ritual');
-        channel.subscribe(status => document.getElementById('sync-status').textContent = `SYNC: ${status}`);
+        const channel = supabase.channel('ritual_instructions');
+        channel.subscribe();
 
-        let muteState = { tony: false, court: false };
-        let curtainOpen = false;
-
-        function broadcast(cmd) { channel.send({ type: 'broadcast', event: 'command', payload: cmd }); }
-
-        function setMode(m) {
-            document.getElementById('btn-reception').classList.toggle('active', m === 'reception');
-            document.getElementById('btn-portal').classList.toggle('active', m === 'portal');
-            broadcast({ type: 'SET_MODE', mode: m });
+        function pushInstruction() {
+            const content = document.getElementById('instruction-input').value;
+            channel.send({
+                type: 'broadcast',
+                event: 'text',
+                payload: { content: content }
+            });
         }
 
-        function toggleMute(who) {
-            muteState[who] = !muteState[who];
-            const btn = document.getElementById(`mute-${who}`);
-            btn.classList.toggle('danger', muteState[who]);
-            btn.textContent = muteState[who] ? `UNMUTE ${who.toUpperCase()}` : `MUTE ${who.toUpperCase()}`;
-            broadcast({ type: 'MUTE_CONTROL', target: who, state: muteState[who] });
-        }
-
-        function toggleCurtain() {
-            curtainOpen = !curtainOpen;
-            const btn = document.getElementById('curtain-btn');
-            btn.classList.toggle('active', curtainOpen);
-            btn.textContent = curtainOpen ? 'CLOSE CURTAIN' : 'OPEN CURTAIN';
-            broadcast({ type: curtainOpen ? 'OPEN_CURTAIN' : 'CLOSE_CURTAIN' });
+        function setPreset(txt) {
+            document.getElementById('instruction-input').value = txt;
+            pushInstruction();
         }
     </script>
 </body>

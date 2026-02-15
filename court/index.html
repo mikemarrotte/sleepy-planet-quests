@@ -4,28 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Quest - Court</title>
-    <link rel="stylesheet" href="../style.css">
+    <title>The Introduction</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            background-color: #0d110d;
+            background: #050505;
             color: #d4d4c8;
             font-family: 'Newsreader', serif;
+            margin: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             height: 100vh;
-            margin: 0;
-            overflow: hidden;
         }
 
-        #video-call {
-            width: 90vw;
-            height: 80vh;
-            border: 1px solid rgba(212, 212, 200, 0.2);
-            border-radius: 20px;
-            overflow: hidden;
+        #video-container {
+            flex: 1;
             background: #000;
         }
 
@@ -35,23 +28,53 @@
             border: none;
         }
 
-        .instructions {
-            margin-top: 1rem;
+        #instruction-box {
+            height: 25vh;
+            border-top: 1px solid rgba(212, 212, 200, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
             text-align: center;
-            font-size: 1.2rem;
+            box-sizing: border-box;
+            background: #070707;
+        }
+
+        #instruction-text {
+            font-size: 1.5rem;
             letter-spacing: 0.1em;
-            opacity: 0.7;
+            line-height: 1.6;
+            transition: opacity 0.5s;
         }
     </style>
 </head>
 
 <body>
-    <div id="video-call">
-        <!-- Connecting Court to Mike (User) -->
-        <iframe src="https://vdo.ninja/?push=Court_Ritual_777&view=Mike_Ritual_777&autoplay=1&autostart=1&cleanviewer=1"
+    <div id="video-container">
+        <!-- Shared Room: TheIntroduction_2024 -->
+        <iframe src="https://vdo.ninja/?room=TheIntroduction_2024&cleanviewer=1"
             allow="autoplay;camera;microphone;fullscreen"></iframe>
     </div>
-    <p class="instructions">Wait here for your invitation to the Common Space.</p>
+
+    <div id="instruction-box">
+        <p id="instruction-text">The space is preparing...</p>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const channel = supabase.channel('ritual_instructions');
+        channel.on('broadcast', { event: 'text' }, (payload) => {
+            const textElem = document.getElementById('instruction-text');
+            textElem.style.opacity = 0;
+            setTimeout(() => {
+                textElem.textContent = payload.payload.content;
+                textElem.style.opacity = 1;
+            }, 500);
+        }).subscribe();
+    </script>
 </body>
 
 </html>
