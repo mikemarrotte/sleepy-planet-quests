@@ -75,6 +75,12 @@
 </head>
 
 <body>
+    <div style="position: fixed; top: 10px; right: 10px; display: flex; align-items: center; gap: 8px;">
+        <div id="sync-status"
+            style="width: 10px; height: 10px; border-radius: 50%; background: #5e4a4a; transition: background 0.5s;">
+        </div>
+        <span style="font-size: 0.6rem; color: rgba(212,212,200,0.3); letter-spacing: 0.1em;">SYNC</span>
+    </div>
     <h1>COMMAND CENTER</h1>
 
     <div class="controls">
@@ -115,12 +121,17 @@
 
     <script>
         const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_6eGLT3B0T94gjmvEA9R0jQ_dDGpHZNl';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const ritualChannel = supabase.channel('common_space_ritual');
 
         ritualChannel.subscribe((status) => {
             console.log('Command Center Sync Status:', status);
+            const statusLight = document.getElementById('sync-status');
+            if (statusLight) {
+                statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+                statusLight.title = `Status: ${status}`;
+            }
         });
 
         const localChannel = new BroadcastChannel('common_space_ritual');

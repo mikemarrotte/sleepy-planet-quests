@@ -36,7 +36,7 @@ const initStreams = () => {
 
 // --- Whispering Wire: Remote Real-time Control (Supabase) ---
 const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_6eGLT3B0T94gjmvEA9R0jQ_dDGpHZNl';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
 
 // Initialize Supabase Client (assuming CDN is loaded in HTML)
 let supabase;
@@ -53,6 +53,10 @@ const initRemoteControl = () => {
             })
             .subscribe((status) => {
                 console.log('Supabase Sync Status:', status);
+                const statusLight = document.getElementById('sync-status');
+                if (statusLight) {
+                    statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+                }
             });
     }
 };
