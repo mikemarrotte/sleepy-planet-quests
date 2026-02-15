@@ -103,20 +103,22 @@ let currentRoom = '';
 let currentPass = '';
 
 function handleRitualCommand(data) {
+    if (!data) return;
     const { type, text, tony, court, room, pass } = data;
     console.log('Received Command:', type);
 
     switch (type) {
         case 'UPDATE_STREAMS':
-            currentTonyId = tony;
-            currentCourtId = court;
-            currentRoom = room;
-            currentPass = pass;
-            updateIndividualStreams(tony, court, room, pass);
+            currentTonyId = tony || currentTonyId;
+            currentCourtId = court || currentCourtId;
+            currentRoom = room || currentRoom;
+            currentPass = pass || currentPass;
+            updateIndividualStreams(currentTonyId, currentCourtId, currentRoom, currentPass);
             break;
         case 'REFRESH_FEEDS':
             updateIndividualStreams(currentTonyId, currentCourtId, currentRoom, currentPass);
             break;
+        // ... (rest of cases remain same)
         case 'START_AMBIENT':
             window.ghost.startAmbient();
             break;
@@ -229,8 +231,13 @@ window.ghost = {
 };
 
 // Initialize
-initStreams();
-initRemoteControl();
+try {
+    initStreams();
+    initRemoteControl();
+} catch (e) {
+    const debugStatus = document.getElementById('debug-status');
+    if (debugStatus) debugStatus.textContent = `FATAL ERROR: ${e.message}`;
+}
 
 // Audio context requires a user gesture in the PORTAL window
 document.body.addEventListener('click', () => {

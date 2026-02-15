@@ -178,14 +178,23 @@
         let ambientOn = false;
 
         function broadcast(data) {
-            // Send via Supabase for remote devices
-            ritualChannel.send({
-                type: 'broadcast',
-                event: 'command',
-                payload: data
-            });
-            // Send via BroadcastChannel for local tabs
-            localChannel.postMessage(data);
+            try {
+                // Send via Supabase for remote devices
+                if (ritualChannel && ritualChannel.state === 'joined') {
+                    ritualChannel.send({
+                        type: 'broadcast',
+                        event: 'command',
+                        payload: data
+                    });
+                }
+            } catch (err) {
+                console.error('Supabase Broadcast Error:', err);
+            }
+
+            // Send via BroadcastChannel for local tabs (always works)
+            if (localChannel) {
+                localChannel.postMessage(data);
+            }
         }
 
         function updateStreams() {
