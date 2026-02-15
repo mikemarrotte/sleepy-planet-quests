@@ -34,8 +34,32 @@ const initStreams = () => {
     }
 };
 
-// --- Whispering Wire: Real-time Control ---
-const channel = new BroadcastChannel('common_space_ritual');
+// --- Whispering Wire: Remote Real-time Control (Supabase) ---
+const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_6eGLT3B0T94gjmvEA9R0jQ_dDGpHZNl';
+
+// Initialize Supabase Client (assuming CDN is loaded in HTML)
+let supabase;
+let ritualChannel;
+
+const initRemoteControl = () => {
+    if (typeof supabase === 'undefined' && typeof window.supabase !== 'undefined') {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        ritualChannel = supabase.channel('common_space_ritual');
+
+        ritualChannel
+            .on('broadcast', { event: 'command' }, (payload) => {
+                handleRitualCommand(payload.payload);
+            })
+            .subscribe((status) => {
+                console.log('Supabase Sync Status:', status);
+            });
+    }
+};
+
+// Fallback for local testing if needed
+const localChannel = new BroadcastChannel('common_space_ritual');
+localChannel.onmessage = (event) => handleRitualCommand(event.data);
 
 // State tracking for refreshing feeds
 let currentTonyId = '';
@@ -43,8 +67,8 @@ let currentCourtId = '';
 let currentRoom = '';
 let currentPass = '';
 
-channel.onmessage = (event) => {
-    const { type, text, tony, court, room, pass } = event.data;
+function handleRitualCommand(data) {
+    const { type, text, tony, court, room, pass } = data;
     console.log('Received Command:', type);
 
     switch (type) {
@@ -77,7 +101,7 @@ channel.onmessage = (event) => {
             window.ghost.clearOmen();
             break;
     }
-};
+}
 
 const updateIndividualStreams = (tonySid, courtSid, room = '', pass = '') => {
     if (tonySid) {
@@ -171,6 +195,7 @@ window.ghost = {
 
 // Initialize
 initStreams();
+initRemoteControl();
 
 // Audio context requires a user gesture in the PORTAL window
 document.body.addEventListener('click', () => {

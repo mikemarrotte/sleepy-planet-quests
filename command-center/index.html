@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Command Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         body {
             background-color: #0d110d;
@@ -112,11 +114,32 @@
     </div>
 
     <script>
-        const channel = new BroadcastChannel('common_space_ritual');
+        const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_6eGLT3B0T94gjmvEA9R0jQ_dDGpHZNl';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const ritualChannel = supabase.channel('common_space_ritual');
+
+        ritualChannel.subscribe((status) => {
+            console.log('Command Center Sync Status:', status);
+        });
+
+        const localChannel = new BroadcastChannel('common_space_ritual');
+
         let scriptLines = [];
         let currentLineIndex = -1;
         let curtainOpen = false;
         let ambientOn = false;
+
+        function broadcast(data) {
+            // Send via Supabase for remote devices
+            ritualChannel.send({
+                type: 'broadcast',
+                event: 'command',
+                payload: data
+            });
+            // Send via BroadcastChannel for local tabs
+            localChannel.postMessage(data);
+        }
 
         function updateStreams() {
             const tony = document.getElementById('tony-sid').value;
@@ -125,25 +148,25 @@
             const pass = document.getElementById('room-pass').value;
 
             flashButton(document.getElementById('btn-update'), '#4a5e4a');
-            channel.postMessage({ type: 'UPDATE_STREAMS', tony, court, room, pass });
+            broadcast({ type: 'UPDATE_STREAMS', tony, court, room, pass });
         }
 
         function toggleState(type, btn) {
             if (type === 'START_AMBIENT') {
                 ambientOn = !ambientOn;
                 btn.classList.toggle('active-state', ambientOn);
-                channel.postMessage({ type: ambientOn ? 'START_AMBIENT' : 'STOP_AMBIENT' });
+                broadcast({ type: ambientOn ? 'START_AMBIENT' : 'STOP_AMBIENT' });
             } else if (type === 'CURTAIN') {
                 curtainOpen = !curtainOpen;
                 btn.classList.toggle('active-state', curtainOpen);
                 btn.textContent = curtainOpen ? 'CLOSE CURTAIN' : 'OPEN CURTAIN';
-                channel.postMessage({ type: curtainOpen ? 'OPEN_CURTAIN' : 'CLOSE_CURTAIN' });
+                broadcast({ type: curtainOpen ? 'OPEN_CURTAIN' : 'CLOSE_CURTAIN' });
             }
         }
 
         function sendCommand(cmd, btn) {
             flashButton(btn, '#4a5e4a');
-            channel.postMessage({ type: cmd });
+            broadcast({ type: cmd });
         }
 
         function flashButton(btn, color) {
@@ -188,12 +211,12 @@
 
         function sendOmen() {
             const val = document.getElementById('omen-val').value;
-            channel.postMessage({ type: 'ACTIVATE_OMEN', text: val });
+            broadcast({ type: 'ACTIVATE_OMEN', text: val });
             flashButton(document.getElementById('btn-omen'), '#4a5e4a');
         }
 
         function clearOmen() {
-            channel.postMessage({ type: 'CLEAR_OMEN' });
+            broadcast({ type: 'CLEAR_OMEN' });
             document.getElementById('omen-val').value = "";
         }
     </script>
