@@ -7,13 +7,15 @@ const tonyOrb = document.getElementById('tony-orb');
 const courtOrb = document.getElementById('court-orb');
 
 // VDO.Ninja Integration
-const getStreamUrl = (streamID, room = '', password = '') => {
+const getStreamUrl = (viewID, pushID = '', room = '', password = '') => {
     let baseUrl = 'https://vdo.ninja/?';
     if (room) baseUrl += `room=${room}&`;
     if (password) baseUrl += `password=${password}&`;
+    if (pushID) baseUrl += `push=${pushID}&`;
+    if (viewID) baseUrl += `view=${viewID}&`;
 
     // Using cleanviewer=1, transparent=1, and autostart=1 to bypass landing pages
-    return `${baseUrl}view=${streamID}&cleanviewer=1&transparent=1&autoplay=1&autostart=1&mute=1&bitrate=3000&quality=0&scale=100&centered=1&nonav=1&nochat=1&pip=0&showdirector=0`;
+    return `${baseUrl}cleanviewer=1&transparent=1&autoplay=1&autostart=1&mute=1&bitrate=3000&quality=0&scale=100&centered=1&nonav=1&nochat=1&pip=0&showdirector=0`;
 };
 
 const initStreams = () => {
@@ -253,6 +255,7 @@ let freq = 0.015;
 let step = 0.0001;
 
 function animateTurbulence() {
+    if (!turbulence) return;
     freq += step;
     if (freq > 0.018 || freq < 0.012) step = -step;
     turbulence.setAttribute('baseFrequency', freq);

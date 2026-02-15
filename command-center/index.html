@@ -124,6 +124,7 @@
         const SUPABASE_URL = 'https://eusqhncaalxcdkpfqgbd.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1c3FobmNhYWx4Y2RrcGZxZ2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExNzEyNjcsImV4cCI6MjA4Njc0NzI2N30.lYWeqibGAldOXeubtdiYEF8UJESUeFjLqzwh14WYNRU';
 
+        let attempts = 0; // RE-LOCATED
         let supabase;
         let ritualChannel;
 
@@ -140,9 +141,8 @@
                     });
 
                     ritualChannel.subscribe((status) => {
-                        console.log('Command Center Sync Status:', status);
                         const statusLight = document.getElementById('sync-status');
-
+                        const debugStatus = document.getElementById('debug-status');
                         if (statusLight) {
                             statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
                             statusLight.title = `Status: ${status}`;
@@ -159,15 +159,9 @@
                 attempts++;
                 if (debugStatus) debugStatus.textContent = `SYNC: LOADING SDK (${attempts}/20)...`;
                 setTimeout(initSupabase, 500);
-            } else {
-                if (debugStatus) {
-                    debugStatus.textContent = 'SYNC ERROR: SDK NOT LOADED';
-                    debugStatus.style.color = '#ff0000';
-                }
             }
         }
 
-        let attempts = 0;
         initSupabase();
 
         const localChannel = new BroadcastChannel('common_space_ritual');
