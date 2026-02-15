@@ -3,35 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Common Space</title>
-    <link rel="stylesheet" href="../style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Common Space | Test Mode</title>
     <style>
-        #debug-status {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            font-size: 0.5rem;
-            color: #5e4a4a;
-            z-index: 2000;
-            font-family: monospace;
-            opacity: 0.3;
+        body {
+            background: #0d110d;
+            color: #d4d4c8;
+            font-family: 'Newsreader', serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
-        #sync-light {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: transparent;
-            z-index: 2000;
-        }
-
-        /* The Arrival Mask */
         #arrival-mask {
             position: fixed;
             top: 0;
@@ -43,72 +27,90 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 2s ease-in-out;
         }
 
         .ritual-btn {
             background: transparent;
-            border: 1px solid rgba(212, 212, 200, 0.2);
+            border: 1px solid rgba(212, 212, 200, 0.3);
             color: #d4d4c8;
             padding: 20px 40px;
-            font-family: 'Newsreader', serif;
-            letter-spacing: 0.3em;
+            font-family: inherit;
+            letter-spacing: 0.2rem;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 1s;
         }
 
-        .ritual-btn:hover {
-            border-color: #d4d4c8;
-            background: rgba(212, 212, 200, 0.05);
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            flex: 1;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .video-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+        }
+
+        .video-box {
+            background: #000;
+            position: relative;
+            border: 1px solid rgba(212, 212, 200, 0.1);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
 
 <body>
-    <!-- The Initial Blackness -->
     <div id="arrival-mask">
-        <button class="ritual-btn" onclick="enterRitual()">ENTER THE COMMON SPACE</button>
+        <button class="ritual-btn" onclick="enterTest()">ENTER THE SPACE (TEST MODE)</button>
     </div>
 
-    <div id="vessel">
-        <div id="sync-light"></div>
-        <div id="debug-status">SYNC: STARTING</div>
+    <div style="padding: 10px; opacity: 0.5; font-size: 0.7rem; letter-spacing: 0.2em; text-align: center;">COMMON SPACE
+        | PASS-THROUGH TEST</div>
 
-        <div class="background-void"></div>
-        <div id="portal-stage">
-            <div id="tony-orb" class="participant-orb"></div>
-            <div id="court-orb" class="participant-orb"></div>
+    <div class="test-grid" id="grid">
+        <div class="video-box">
+            <div class="video-label">TONY FEED</div>
+            <div id="tony-slot" style="height:100%"></div>
         </div>
-        <div id="curtain"></div>
-        <div id="omen-container">
-            <p id="omen-text"></p>
+        <div class="video-box">
+            <div class="video-label">COURT FEED</div>
+            <div id="court-slot" style="height:100%"></div>
         </div>
     </div>
 
-    <script src="../app.js"></script>
     <script>
-        // Detection Logic
         const urlParams = new URLSearchParams(window.location.search);
         const role = urlParams.get('role');
+        const ROOM = 'Ritual_Room_111';
 
-        // Clean the URL immediately for aesthetics
-        if (role) {
-            window.history.replaceState({}, document.title, window.location.pathname);
-            window.participantRole = role;
-        }
+        function enterTest() {
+            document.getElementById('arrival-mask').style.display = 'none';
 
-        function enterRitual() {
-            document.getElementById('arrival-mask').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('arrival-mask').style.display = 'none';
-            }, 2000);
+            const tonySlot = document.getElementById('tony-slot');
+            const courtSlot = document.getElementById('court-slot');
 
-            // Trigger the camera/audio logic in app.js
-            if (window.initRemoteControl) initRemoteControl();
+            // Tony's logic
+            const tonyPush = (role === 'tony') ? 'TonyPort' : '';
+            const tonyView = (role !== 'tony') ? 'TonyPort' : 'TonyPort';
 
-            // If we have a role, we need to ensure local streams are "pushed"
-            // This will be handled by the next UPDATE_STREAMS command from Mike
+            // Court's logic
+            const courtPush = (role === 'court') ? 'CourtPort' : '';
+            const courtView = (role !== 'court') ? 'CourtPort' : 'CourtPort';
+
+            tonySlot.innerHTML = `<iframe src="https://vdo.ninja/?room=${ROOM}&push=${tonyPush}&view=${tonyView}&cleanviewer=1" allow="autoplay;camera;microphone;fullscreen"></iframe>`;
+            courtSlot.innerHTML = `<iframe src="https://vdo.ninja/?room=${ROOM}&push=${courtPush}&view=${courtView}&cleanviewer=1" allow="autoplay;camera;microphone;fullscreen"></iframe>`;
         }
     </script>
 </body>
