@@ -48,8 +48,15 @@ const initRemoteControl = () => {
 
     const tryConnect = () => {
         if (typeof window.supabase !== 'undefined') {
+            console.log('Initializing Supabase with key:', SUPABASE_KEY.substring(0, 10) + '...');
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            ritualChannel = supabase.channel('common_space_ritual');
+
+            // Enable broadcast configuration explicitly
+            ritualChannel = supabase.channel('common_space_ritual', {
+                config: {
+                    broadcast: { ack: true }
+                }
+            });
 
             ritualChannel
                 .on('broadcast', { event: 'command' }, (payload) => {
@@ -58,16 +65,19 @@ const initRemoteControl = () => {
                 .subscribe((status) => {
                     console.log('Supabase Sync Status:', status);
                     const statusLight = document.getElementById('sync-status');
+                    const debugStatus = document.getElementById('debug-status');
+
                     if (statusLight) {
                         statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
+                    }
+                    if (debugStatus) {
+                        debugStatus.textContent = `SYNC: ${status}`;
+                        debugStatus.style.color = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
                     }
                 });
         } else if (attempts < maxAttempts) {
             attempts++;
-            console.log(`Waiting for Supabase... Attempt ${attempts}`);
             setTimeout(tryConnect, 500);
-        } else {
-            console.error('Supabase failed to load.');
         }
     };
 

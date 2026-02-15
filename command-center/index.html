@@ -82,6 +82,7 @@
         <span style="font-size: 0.6rem; color: rgba(212,212,200,0.3); letter-spacing: 0.1em;">SYNC</span>
     </div>
     <h1>COMMAND CENTER</h1>
+    <div id="debug-status" style="font-size: 0.6rem; color: #5e4a4a; margin-bottom: 2rem;">SYNC: INITIALIZING...</div>
 
     <div class="controls">
         <div style="display: grid; gap: 0.5rem;">
@@ -129,14 +130,24 @@
         function initSupabase() {
             if (typeof window.supabase !== 'undefined') {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                ritualChannel = supabase.channel('common_space_ritual');
+                ritualChannel = supabase.channel('common_space_ritual', {
+                    config: {
+                        broadcast: { self: true }
+                    }
+                });
 
                 ritualChannel.subscribe((status) => {
                     console.log('Command Center Sync Status:', status);
                     const statusLight = document.getElementById('sync-status');
+                    const debugStatus = document.getElementById('debug-status');
+
                     if (statusLight) {
                         statusLight.style.background = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
                         statusLight.title = `Status: ${status}`;
+                    }
+                    if (debugStatus) {
+                        debugStatus.textContent = `SYNC: ${status}`;
+                        debugStatus.style.color = status === 'SUBSCRIBED' ? '#4a5e4a' : '#5e4a4a';
                     }
                 });
             } else {
