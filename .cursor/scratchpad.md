@@ -44,9 +44,9 @@ We are crafting a **bespoke ritual vessel**, a PWA designed to transcend the ste
    - *Success Criteria*: Full sensory synchronization (Audio, Visual, Haptic) upon command. [COMPLETED]
 
 7. **The Sovereign Connection (Deployment & Subdomain)**
-   - Initialize Git repository and link to GitHub.
-   - Create `CNAME` file for `quest.sleepyplanet.studio`.
-   - Implement path-based routing for personalized links (e.g., `/tony`, `/court`).
+   - Initialize Git repository and link to GitHub. [COMPLETED]
+   - Create `CNAME` file for `quest.sleepyplanet.studio`. [COMPLETED]
+   - Implement path-based routing for personalized links (e.g., `/tony`, `/court`). [COMPLETED]
    - *Success Criteria*: Site is accessible at `quest.sleepyplanet.studio` and handles subpaths correctly.
 
 ## Project Status Board
@@ -54,12 +54,22 @@ We are crafting a **bespoke ritual vessel**, a PWA designed to transcend the ste
 - [x] 2. The Loamy Void (Layer 0 & 4)
 - [x] 3. Piping the Brine (VDO.Ninja Integration)
 - [x] 4. The Alchemist's Lens (Orb Styling & Turbulence)
-- [x] 5. The Whispering Wire & Command Vellum
+- [x] 5. The Whispering Wire & Command Vellum (Local Version)
 - [x] 6. Invoking the Ritual (Trigger & Somatics)
-- [ ] 7. The Sovereign Connection (Deployment & Subdomain)
+- [x] 7. The Sovereign Connection (Deployment & Subdomain)
 
 ## Executor's Feedback or Assistance Requests
-I am ready to proceed with the Deployment and Subdomain tasks. I will need the GitHub repository URL to push the code. I will also implement a clean way to handle `/tony` and `/court` by using subdirectories that serve the main application while identifying the participant.
+The code has been pushed to `https://github.com/mikemarrotte/sleepy-planet-quests`. 
+
+**Manual Steps Required:**
+1. **GitHub Pages**: Go to Repo Settings > Pages. Set source to `main` branch.
+2. **DNS Record**: In your domain provider (Sleepy Planet), add a `CNAME` record:
+   - Host/Name: `quest`
+   - Content/Value: `mikemarrotte.github.io`
+3. **Verification**: Once set up, `quest.sleepyplanet.studio/tony` and `quest.sleepyplanet.studio/court` will be live.
+
+**Next Step Recommendation:**
+Currently, "Ghost Control" (the remote dashboard) works via `BroadcastChannel`, which requires you to be on the same computer. If you want to control it from a different device (Remote Control), we need to implement Supabase Realtime in the next turn.
 
 ## Lessons
 - Include info useful for debugging in the program output.
