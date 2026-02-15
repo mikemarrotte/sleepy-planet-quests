@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Common Space | Test Mode</title>
+    <title>The Common Space | View-Only Test</title>
     <style>
         body {
             background: #0d110d;
@@ -47,20 +47,20 @@
             padding: 10px;
         }
 
-        .video-label {
+        .video-box {
+            background: #000;
+            position: relative;
+            border: 1px solid rgba(212, 212, 200, 0.1);
+        }
+
+        .label {
             position: absolute;
             top: 10px;
             left: 10px;
             background: rgba(0, 0, 0, 0.5);
             padding: 5px 10px;
             font-size: 0.7rem;
-            letter-spacing: 0.1em;
-        }
-
-        .video-box {
-            background: #000;
-            position: relative;
-            border: 1px solid rgba(212, 212, 200, 0.1);
+            z-index: 10;
         }
 
         iframe {
@@ -73,44 +73,33 @@
 
 <body>
     <div id="arrival-mask">
-        <button class="ritual-btn" onclick="enterTest()">ENTER THE SPACE (TEST MODE)</button>
+        <button class="ritual-btn" onclick="activateView()">ENTER THE COMMON SPACE</button>
     </div>
 
-    <div style="padding: 10px; opacity: 0.5; font-size: 0.7rem; letter-spacing: 0.2em; text-align: center;">COMMON SPACE
-        | PASS-THROUGH TEST</div>
+    <div style="padding: 10px; opacity: 0.5; font-size: 0.7rem; letter-spacing: 0.2em; text-align: center;">THE COMMON
+        SPACE (VIEWING MODE)</div>
 
     <div class="test-grid" id="grid">
         <div class="video-box">
-            <div class="video-label">TONY FEED</div>
+            <div class="label">TONY</div>
             <div id="tony-slot" style="height:100%"></div>
         </div>
         <div class="video-box">
-            <div class="video-label">COURT FEED</div>
+            <div class="label">COURT</div>
             <div id="court-slot" style="height:100%"></div>
         </div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const role = urlParams.get('role');
         const ROOM = 'Ritual_Room_111';
 
-        function enterTest() {
+        function activateView() {
             document.getElementById('arrival-mask').style.display = 'none';
 
-            const tonySlot = document.getElementById('tony-slot');
-            const courtSlot = document.getElementById('court-slot');
-
-            // Tony's logic
-            const tonyPush = (role === 'tony') ? 'TonyPort' : '';
-            const tonyView = (role !== 'tony') ? 'TonyPort' : 'TonyPort';
-
-            // Court's logic
-            const courtPush = (role === 'court') ? 'CourtPort' : '';
-            const courtView = (role !== 'court') ? 'CourtPort' : 'CourtPort';
-
-            tonySlot.innerHTML = `<iframe src="https://vdo.ninja/?room=${ROOM}&push=${tonyPush}&view=${tonyView}&cleanviewer=1" allow="autoplay;camera;microphone;fullscreen"></iframe>`;
-            courtSlot.innerHTML = `<iframe src="https://vdo.ninja/?room=${ROOM}&push=${courtPush}&view=${courtView}&cleanviewer=1" allow="autoplay;camera;microphone;fullscreen"></iframe>`;
+            // WE ARE NOT PUSHING HERE. We are only viewing the 2 participant "Channels".
+            // Since there is no &push=, VDO.Ninja will not ask for camera permission.
+            document.getElementById('tony-slot').innerHTML = `<iframe src="https://vdo.ninja/?room=${ROOM}&view=TonyPort&autoplay=1&autostart=1&cleanviewer=1&mute=1" allow="autoplay;fullscreen"></iframe>`;
+            document.getElementById('court-slot').innerHTML = `<iframe src="https://vdo.ninja/?room=${ROOM}&view=CourtPort&autoplay=1&autostart=1&cleanviewer=1&mute=1" allow="autoplay;fullscreen"></iframe>`;
         }
     </script>
 </body>
