@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reception | Front Desk</title>
+    <title>Master Console | Reception</title>
     <style>
         body {
             background: #050705;
@@ -18,33 +18,45 @@
             overflow: hidden;
         }
 
-        .monitor-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            flex: 1;
-            gap: 15px;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px 20px 20px;
+            border-bottom: 1px solid rgba(212, 212, 200, 0.1);
         }
 
-        .monitor-box {
-            background: #000;
-            border: 1px solid rgba(212, 212, 200, 0.1);
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
+        h1 {
+            margin: 0;
+            font-weight: 200;
+            letter-spacing: 0.5em;
+            font-size: 1rem;
+            opacity: 0.6;
         }
 
-        .label {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 4px 12px;
-            border-radius: 4px;
+        .director-btn {
+            background: transparent;
+            border: 1px solid rgba(212, 212, 200, 0.3);
+            color: #d4d4c8;
+            padding: 8px 15px;
             font-size: 0.7rem;
-            letter-spacing: 0.2em;
-            z-index: 100;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .director-btn:hover {
+            background: rgba(212, 212, 200, 0.1);
+        }
+
+        .console-vessel {
+            flex: 1;
+            margin-top: 20px;
+            background: #000;
+            border-radius: 12px;
             border: 1px solid rgba(212, 212, 200, 0.1);
-            pointer-events: none;
+            overflow: hidden;
+            position: relative;
         }
 
         iframe {
@@ -52,34 +64,31 @@
             height: 100%;
             border: none;
         }
+
+        .status-bar {
+            padding: 10px 20px;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            opacity: 0.4;
+            text-align: right;
+        }
     </style>
 </head>
 
 <body>
-    <div style="text-align: center; padding-bottom: 20px; opacity: 0.5; letter-spacing: 0.5em;">RECEPTION MONITOR</div>
-
-    <div class="monitor-grid">
-        <!-- TONY -->
-        <div class="monitor-box">
-            <div class="label">TONY</div>
-            <iframe src="https://vdo.ninja/?room=Ritual_Room_111&view=TonyPort&autoplay=1&autostart=1&cleanviewer=1"
-                allow="autoplay;camera;microphone;fullscreen"></iframe>
-        </div>
-
-        <!-- MIKE (YOU) -->
-        <div class="monitor-box" style="border-color: rgba(212,212,200,0.4);">
-            <div class="label">YOU (MIKE)</div>
-            <iframe src="https://vdo.ninja/?room=Ritual_Room_111&push=MikePort&cleanviewer=1"
-                allow="autoplay;camera;microphone;fullscreen"></iframe>
-        </div>
-
-        <!-- COURT -->
-        <div class="monitor-box">
-            <div class="label">COURT</div>
-            <iframe src="https://vdo.ninja/?room=Ritual_Room_111&view=CourtPort&autoplay=1&autostart=1&cleanviewer=1"
-                allow="autoplay;camera;microphone;fullscreen"></iframe>
-        </div>
+    <div class="header">
+        <h1>RECEPTION MASTER CONSOLE</h1>
+        <a href="https://vdo.ninja/?director=Ritual_Room_111" target="_blank" class="director-btn">OPEN FULL DIRECTOR
+            PANEL ↗</a>
     </div>
+
+    <div class="console-vessel">
+        <!-- Join as Director with specific viewing parameters -->
+        <iframe src="https://vdo.ninja/?director=Ritual_Room_111&push=MikePort&view=TonyPort,CourtPort&cleanviewer=1"
+            allow="autoplay;camera;microphone;fullscreen"></iframe>
+    </div>
+
+    <div class="status-bar">ROOM ID: RITUAL_ROOM_111 | SYNC ACTIVE</div>
 </body>
 
 </html>
