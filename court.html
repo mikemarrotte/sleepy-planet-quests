@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>A Common Space | For Court</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --charcoal: #0f1011;
+            --gold: #d4d4c8;
+            --soft-gold: rgba(212, 212, 200, 0.6);
+            --accent-glow: rgba(100, 150, 255, 0.08);
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--charcoal);
+            font-family: 'Newsreader', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .background-void {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1c1e 0%, #0f1011 100%);
+            z-index: 0;
+        }
+
+        .video-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 80vw;
+            max-width: 1000px;
+            aspect-ratio: 16 / 9;
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.5), 0 0 40px var(--accent-glow);
+            border: 1px solid rgba(212, 212, 200, 0.1);
+            background: #000;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border: none;
+        }
+
+        .gratitude-text {
+            position: absolute;
+            bottom: -60px;
+            width: 100%;
+            text-align: center;
+            color: var(--gold);
+            font-size: 1.1rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 200;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-void"></div>
+
+    <div class="video-wrapper">
+        <iframe src="https://www.youtube.com/embed/-nyBWZxWlpw?autoplay=1&modestbranding=1&rel=0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>
+
+        <div class="gratitude-text">A Common Space | For Court</div>
+    </div>
+</body>
+
+</html>
