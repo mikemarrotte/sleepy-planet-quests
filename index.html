@@ -5,20 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Common Space | Gratitude</title>
-    <!-- Premium Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap"
-        rel="stylesheet">
+    <title>Sleepy Planet | The Threshold</title>
     <style>
         :root {
-            --slate: #1a1c1e;
-            --charcoal: #0f1011;
-            --gold: #d4d4c8;
-            --soft-gold: rgba(212, 212, 200, 0.6);
-            --accent-glow: rgba(100, 150, 255, 0.1);
+            --charcoal: #050607;
+            --deep-depth: #0a0c0e;
+            --faint-light: rgba(255, 255, 255, 0.03);
         }
 
         body,
@@ -29,140 +21,137 @@
             height: 100%;
             overflow: hidden;
             background-color: var(--charcoal);
-            font-family: 'Newsreader', serif;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
 
-        .background-void {
+        /* The Loamy Depth */
+        .void {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, #1a1c1e 0%, #0f1011 100%);
-            z-index: 0;
+            background: radial-gradient(circle at 50% 50%, #12151a 0%, #050607 100%);
+            z-index: 1;
         }
 
-        /* Subtle nebula-like glow */
-        .background-void::after {
-            content: '';
+        /* Breathing Atmosphere */
+        .atmosphere {
             position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, var(--faint-light) 0%, transparent 70%);
+            animation: breathe 20s ease-in-out infinite alternate;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        @keyframes breathe {
+            0% {
+                transform: scale(1) translate(-25%, -25%);
+                opacity: 0.2;
+            }
+
+            100% {
+                transform: scale(1.1) translate(-20%, -20%);
+                opacity: 0.5;
+            }
+        }
+
+        /* The Enigmatic Mark */
+        .monolith {
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--faint-light), transparent);
+            z-index: 10;
+            opacity: 0.3;
+            filter: blur(1px);
+            animation: shimmer 8s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                opacity: 0.1;
+                height: 60px;
+            }
+
+            50% {
+                opacity: 0.5;
+                height: 120px;
+            }
+        }
+
+        /* Grainy Film Texture */
+        .noise {
+            position: fixed;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle at center, rgba(60, 80, 110, 0.08) 0%, transparent 50%);
-            animation: rotateNebula 120s linear infinite;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.04;
             pointer-events: none;
+            z-index: 5;
+            animation: noise 0.2s steps(2) infinite;
         }
 
-        @keyframes rotateNebula {
-            from {
-                transform: rotate(0deg);
+        @keyframes noise {
+            0% {
+                transform: translate(0, 0);
             }
 
-            to {
-                transform: rotate(360deg);
+            10% {
+                transform: translate(-1%, -1%);
             }
-        }
 
-        .video-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 80vw;
-            max-width: 1000px;
-            aspect-ratio: 16 / 9;
-            box-shadow: 0 0 100px rgba(0, 0, 0, 0.8), 0 0 40px var(--accent-glow);
-            border: 1px solid rgba(212, 212, 200, 0.1);
-            background: #000;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+            20% {
+                transform: translate(-2%, 1%);
+            }
 
-        .video-wrapper.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+            30% {
+                transform: translate(1%, -2%);
+            }
 
-        video,
-        iframe {
-            width: 100%;
-            height: 100%;
-            display: block;
-            border: none;
-        }
+            40% {
+                transform: translate(-1%, 2%);
+            }
 
-        .content-overlay {
-            position: absolute;
-            bottom: -80px;
-            width: 100%;
-            text-align: center;
-            pointer-events: none;
-        }
+            50% {
+                transform: translate(-2%, -2%);
+            }
 
-        .gratitude-text {
-            color: var(--gold);
-            font-size: 1.1rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            font-weight: 200;
-            opacity: 0;
-            transition: opacity 5s ease-in 2s;
-        }
+            60% {
+                transform: translate(-1%, 1%);
+            }
 
-        .gratitude-text.active {
-            opacity: 0.4;
-        }
+            70% {
+                transform: translate(1%, -2%);
+            }
 
-        .artifact-link {
-            position: fixed;
-            top: 40px;
-            right: 40px;
-            z-index: 100;
-            color: var(--soft-gold);
-            text-decoration: none;
-            font-size: 0.7rem;
-            letter-spacing: 0.4em;
-            text-transform: uppercase;
-            transition: all 0.5s ease;
-            opacity: 0.3;
-        }
+            80% {
+                transform: translate(-1%, 1%);
+            }
 
-        .artifact-link:hover {
-            opacity: 0.8;
-            letter-spacing: 0.5em;
+            90% {
+                transform: translate(1%, -1%);
+            }
+
+            100% {
+                transform: translate(0, 1%);
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="background-void"></div>
-
-    <a href="vessel.html" class="artifact-link">The Portal Artifact</a>
-
-    <div class="video-wrapper" id="viz-container">
-        <iframe src="https://www.youtube.com/embed/-nyBWZxWlpw?autoplay=1&modestbranding=1&rel=0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-        </iframe>
-
-        <div class="content-overlay">
-            <div class="gratitude-text" id="gratitude-text">A Common Space | For Court</div>
-        </div>
-    </div>
-
-    <script>
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('viz-container').classList.add('active');
-                document.getElementById('gratitude-text').classList.add('active');
-            }, 500);
-        };
-    </script>
+    <div class="void"></div>
+    <div class="atmosphere"></div>
+    <div class="noise"></div>
+    <div class="monolith"></div>
 </body>
 
 </html>
