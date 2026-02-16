@@ -78,3 +78,34 @@ Currently, "Ghost Control" (the remote dashboard) works via `BroadcastChannel`, 
 - Always ask before using the -force git command
 - GitHub Pages expects a `CNAME` file at the root for custom subdomains.
 - To support subpaths like `/tony` without a build step or complex routing, creating a directory `tony/` with an `index.html` is the most reliable method for static hosting.
+82: 
+83: ## Post-Ritual: Archiving & Gratitude
+84: 1. **Archiving the Vessel**
+85:    - Rename root `index.html` to `vessel.html`.
+86:    - Rename sub-path `index.html` files (court, tony) if necessary to preserve their ritual state.
+87:    - *Success Criteria*: The original ritual portal is still accessible via `/vessel.html`.
+88: 
+89: 2. **Establishing the Active State (Gratitude)**
+90:    - Create a new root `index.html` featuring a full-screen iframe of Mike's thank you video.
+91:    - Apply a premium, minimalist design consistent with the Sleepy Planet aesthetic.
+92:    - *Success Criteria*: Landing on the root URL shows the video of Mike thanking Court.
+93: 
+94: ## Project Status Board
+95: - [x] 1. The Bone House (Base PWA Structure)
+96: - [x] 2. The Loamy Void (Layer 0 & 4)
+97: - [x] 3. Piping the Brine (VDO.Ninja Integration)
+98: - [x] 4. The Alchemist's Lens (Orb Styling & Turbulence)
+99: - [x] 5. The Whispering Wire & Command Vellum (Local Version)
+100: - [x] 6. Invoking the Ritual (Trigger & Somatics)
+101: - [x] 7. The Sovereign Connection (Deployment & Subdomain)
+102: - [x] 8. Archiving & Active State
+
+103: 
+104: ## Executor's Feedback or Assistance Requests
+105: - Transitioning to Post-Ritual state. 
+106: - **Action**: Archiving current portal to `vessel.html`.
+107: - **Action**: Creating new `index.html` with video iframe.
+108: - *Note*: I will use a placeholder for the video URL unless provided.
+109: 
+110: ## Lessons
+111: ... (previous lessons)

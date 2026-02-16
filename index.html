@@ -1,66 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>The Common Space</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0d110d">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>A Message for Court | The Common Space</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,ital,wght@6..72,0,200..800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color-start: #1a1a14;
+            --bg-color-end: #0d110d;
+            --text-color: rgba(230, 230, 210, 0.9);
+            --accent-glow: rgba(100, 150, 255, 0.15);
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Newsreader', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .background-void {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            z-index: 0;
+            opacity: 0.8;
+        }
+
+        /* Subtle nebula-like glow */
+        .background-void::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(60, 80, 110, 0.1) 0%, transparent 50%);
+            animation: rotateNebula 120s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotateNebula {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .video-container {
+            position: relative;
+            z-index: 10;
+            width: 85vw;
+            max-width: 1200px;
+            aspect-ratio: 16 / 9;
+            box-shadow: 0 0 80px rgba(0, 0, 0, 0.9), 0 0 30px var(--accent-glow);
+            border-radius: 2px;
+            overflow: hidden;
+            background: #000;
+            opacity: 0;
+            transform: scale(0.99);
+            transition: all 3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .video-container.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .gratitude-overlay {
+            position: absolute;
+            bottom: 8%;
+            width: 100%;
+            text-align: center;
+            z-index: 20;
+            color: var(--text-color);
+            pointer-events: none;
+        }
+
+        .gratitude-title {
+            font-size: 0.9rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            font-weight: 200;
+            opacity: 0;
+            transition: opacity 5s ease-in 2s;
+            margin-bottom: 8px;
+        }
+
+        .gratitude-name {
+            font-size: 1.8rem;
+            letter-spacing: 0.1em;
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 5s ease-in 3.5s;
+        }
+
+        .gratitude-title.active,
+        .gratitude-name.active {
+            opacity: 0.5;
+        }
+
+        /* Access to Archive */
+        .archive-link {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            z-index: 100;
+            color: rgba(255, 255, 255, 0.2);
+            text-decoration: none;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .archive-link:hover {
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
 </head>
+
 <body>
-    <div id="vessel">
-        <!-- Layer 0: Background -->
-        <div class="background-void"></div>
+    <div class="background-void"></div>
 
-        <!-- Layer 1: Ambient Audio Container -->
-        <div id="ambient-audio-container"></div>
+    <a href="vessel.html" class="archive-link">The Portal Artifact</a>
 
-        <!-- Layer 2 & 3: Participant Orbs -->
-        <div id="portal-stage">
-            <div id="tony-orb-container" class="orb-wrapper">
-                <div class="participant-orb" id="tony-orb">
-                    <!-- IFrame Pipe will go here -->
-                </div>
-            </div>
-            <div id="court-orb-container" class="orb-wrapper">
-                <div class="participant-orb" id="court-orb">
-                    <!-- IFrame Pipe will go here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Layer 4: The Curtain -->
-        <div id="curtain"></div>
-
-        <!-- Layer 5: The Omen -->
-        <div id="omen-container">
-            <p id="omen-text"></p>
-        </div>
+    <div class="video-container" id="video-container">
+        <!-- 
+             ACTION REQUIRED: 
+             Replace the 'src' attribute below with the URL of your video.
+             If using YouTube: https://www.youtube.com/embed/VIDEO_ID?autoplay=1
+             If using Loom: https://www.loom.com/embed/VIDEO_ID?autoplay=1
+        -->
+        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0&modestbranding=1"
+            allow="autoplay; fullscreen; picture-in-picture" allowfullscreen>
+        </iframe>
     </div>
 
-    <!-- SVG Displacement Filters for the Orbs -->
-    <svg style="display: none;">
-        <defs>
-            <filter id="orb-turbulence">
-                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="20" />
-            </filter>
-        </defs>
-    </svg>
+    <div class="gratitude-overlay">
+        <div class="gratitude-title" id="gratitude-title">The Common Space</div>
+        <div class="gratitude-name" id="gratitude-name">Court & Tony</div>
+    </div>
 
-    <script src="app.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => console.log('Service Worker registered.', reg))
-                    .catch(err => console.log('Service Worker registration failed.', err));
-            });
-        }
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('video-container').classList.add('active');
+                document.getElementById('gratitude-title').classList.add('active');
+                document.getElementById('gratitude-name').classList.add('active');
+            }, 800);
+        };
     </script>
 </body>
+
 </html>
