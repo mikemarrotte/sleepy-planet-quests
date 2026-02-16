@@ -88,10 +88,12 @@
             transform: translateY(0);
         }
 
-        video {
+        video,
+        iframe {
             width: 100%;
             height: 100%;
             display: block;
+            border: none;
         }
 
         .content-overlay {
@@ -143,10 +145,10 @@
     <a href="vessel.html" class="artifact-link">The Portal Artifact</a>
 
     <div class="video-wrapper" id="viz-container">
-        <video id="gratitude-video" controls autoplay playsinline>
-            <source src="thank_you.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <iframe src="https://www.youtube.com/embed/-nyBWZxWlpw?autoplay=1&modestbranding=1&rel=0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>
 
         <div class="content-overlay">
             <div class="gratitude-text" id="gratitude-text">A Common Space | For Court</div>
